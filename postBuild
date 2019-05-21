@@ -1,6 +1,8 @@
 #!/bin/bash
 set -euo pipefail
 
+pip install --no-cache-dir --editable .
+
 jlpm install
 jlpm run build
 jupyter labextension link .
