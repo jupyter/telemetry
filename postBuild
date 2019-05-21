@@ -1,0 +1,6 @@
+#!/bin/bash
+set -euo pipefail
+
+jlpm install
+jlpm run build
+jupyter labextension link .

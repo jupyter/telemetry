@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 alembic
 async_generator>=1.8
 certipy>=0.1.2
@@ -13,3 +14,7 @@ tornado>=5.0
 traitlets>=4.3.2
 jsonschema
 python-json-logger
+=======
+# JupyterHub with PR https://github.com/jupyterhub/jupyterhub/pull/2542
+git+https://github.com/yuvipanda/jupyterhub.git@d22e5cfa25ee430fca32b64a3a527723aa0c8fe4
+>>>>>>> 50121d82... Try getting this to work on mybinder
