@@ -1,0 +1,23 @@
+{
+    "$id": "lab.jupyter.org/command-invocations",
+    "version": 1,
+    "title": "JupyterLab command invocations",
+    "description": "Records each invocation of any command in JupyterLab",
+    "type": "object",
+    "properties": {
+        "session_id": {
+            "comment": "We should validate that this is a UUID, Is this PII?",
+            "type": "string",
+            "description": "Randomly generated session ID for this user session"
+        },
+        "command_id": {
+            "type": "string",
+            "description": "ID of the command being executed"
+        },
+        "command_args": {
+            "type": "object",
+            "description": "Arguments to the command being executed",
+            "pii": true
+        }
+    }
+}
