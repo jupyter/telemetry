@@ -143,6 +143,7 @@ The implementation of the `telemetry.record_event` method which handles
 
 * Schema validation
 * Adds event metadata such as `creationTime`
+  * We should be able to add more metadata fields in the future if necessary without clashing with any potential schemas that have been defined in the various uses.
 * Routing events to configured sinks
 * Filters events based on the configuration
 * (Optionally) Aggregation and data cleaning.
