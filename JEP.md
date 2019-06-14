@@ -46,13 +46,13 @@ The enhancement spans two categories - general concepts applicable across all Ju
 * Jupyter server
 * JupyterLab
 * JupyterHub
-* Jupyter Classic
+* Jupyter Notebook (Classic)
 
 ## Detailed Explanation
 
 ### Event Schema
 
-Each event is published conforming a given event schema and this is the contract followed by each step in the event lifecycle. These are referred to by all publishers regardless of whether the event comes from the server or the browser.
+Each event is published conforming a given [JSON schema](https://json-schema.org/) and this is the contract followed by each step in the event lifecycle. These are referred to by all publishers regardless of whether the event comes from the server or the browser.
 
 Example event schema
 
@@ -78,8 +78,9 @@ Example event schema
 
 Schema validation is done in the core telemetry framework that routes events from publishers to sinks, so that each event sink does not need to implement schema validation.
 
-**Open Questions**:
+**Open Questions/TBD**:
 
+* List of rules for event schemas
 * How do organizations deploy custom schemas?
 * Where are the schemas for public events stored?
 
@@ -88,14 +89,14 @@ Schema validation is done in the core telemetry framework that routes events fro
 Event sinks are the backends where events published to.  Event sinks can be configured from the browser as well as the server. Custom sinks can be implemented by extending the interface for the given Jupyter component. 
 See [Python interface](#python-event-sink-interface) and the [JupyterLab interface](#jupyterlab-event-sink-interface)
 
-### Jupyter Server
+### Server-side components
 
 #### Python publisher library
 
 The Python event publisher library provides extension developers and other internal components an interface to record events. This is agnostic of the event sink back-end and the other deployment configurations.
 
 ```python
-import jupyter.telemetry as telemetry
+import jupyter_telemetry as telemetry
 
 telemetry.record_event(
     name='org.jupyter.kernel_lifecycle_event',
@@ -125,10 +126,15 @@ A setting on the Jupyter server allows operators to configure various options of
 * The event sink implementations
 * The list of event names to whitelist or blacklist
 
-```bash
-jupyter notebook \
-    --NotebookApp.telemetry_event_sinks=mypackage.sinks.MyCustomEventSink,mypackage.sinks.AnotherCustomEventSink \
-    --NotebookApp.blacklisted_events='org.jupyter.someevent' \
+```json
+c.NotebookApp.telemetry_event_sinks = [
+    "mypackage.sinks.MyCustomEventSink"
+    "mypackage.sinks.AnotherCustomEventSink"
+]
+
+c.NotebookApp.whitelisted_events = [
+    "org.jupyter.someevent"
+]
 ```
 
 #### Core event router
@@ -233,7 +239,7 @@ Since JupyterLab is the user facing component, it also contains UX features to g
 
 (This section needs to be filled out)
 
-### Jupyter Classic
+### Jupyter Notebook (Classic) Frontend
 
 The proposal for Jupyter Classis is to have a convenience JS library that can be used to pubish events to the server [REST Endpoint](#rest-endpoint).
 This ensures that we provide support for Jupyter Classic but can rely on the Jupyter Server to do much of the heavy-lifting by relying on the Core Event Router, Event Sinks, and configuration done at the server level.
@@ -269,8 +275,7 @@ PROS
 
 CONS
 
-* How do we enable data protection by default? (Just marking a event attribute as PII may not solve this)
-* What guidance and building blocks do we provide for compliance programs such as GDPR
+* Current proposal does not have guidance and building blocks for compliance programs such as GDPR
 
 ## Appendix
 
