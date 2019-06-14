@@ -3,8 +3,8 @@
 | Item       | Value                                                                                                                        |
 |------------|------------------------------------------------------------------------------------------------------------------------------|
 | JEP Number | XX                                                                                                                           |
-| Title      | Jupyter telemetry                                                                                                   |
-| Authors    |  |
+| Title      | Jupyter telemetry                                                                                                  |
+| Authors    |  Jaipreet Singh (jaipreet@amazon.com, @jaipreet-s), Zach Sailer(zachsailer@gmail.com, @Zsailer), Yuvi Panda(yuvipanda@gmail.com, @yuvipanda) |
 | Status     | Draft                                                                                                                        |
 | Type       | S - [Standards Track](https://www.python.org/dev/peps/#pep-types-key) JEP                                                    |
 | Created    | 5 June 2019                                                                                                           |
@@ -99,7 +99,7 @@ The Python event publisher library provides extension developers and other inter
 import jupyter_telemetry as telemetry
 
 telemetry.record_event(
-    name='org.jupyter.kernel_lifecycle_event',
+    schema_name='org.jupyter.kernel_lifecycle_event',
     schema_version='1',
     args={
         'kernel_name': 'python3',
