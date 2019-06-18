@@ -293,6 +293,7 @@ There are certainly ethical and legal questions around telemetry systems. To add
 
 ### References
 
+0. Telemetry [JEP proposal](https://github.com/jupyter/telemetry/blob/master/JEP.md)
 1. Original write up by ellisonbg@ [https://github.com/jupyterlab/team-compass/issues/4](https://github.com/jupyterlab/team-compass/issues/4)
 2. Wikimedia [telemetry system](https://m.mediawiki.org/wiki/Extension:EventLogging/Guide)
 3. Initial strawman [design doc](https://github.com/jupyterlab/jupyterlab-telemetry/blob/master/design.md)
