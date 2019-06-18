@@ -178,6 +178,46 @@ HTTP PUT /api/telemetry/event
 
 1. Is this work done on the standalone jupyter-server implementation or on the classic jupyter/notebook?
 
+### JupyterHub
+
+JupyterHub would use the same underlying python library as the notebook server, and be configured
+in the same way.
+
+JupyterHub relies on extension through Spawners, Authenticators, Proxies & Services to
+do most of its work. They would have interesting events to emit, so we should make sure
+they have easy ways to.
+
+#### Spawners, Authenticators & Proxies
+
+Spawners, Authenticators & Proxies run in-process with JupyterHub, and have access to
+the JupyterHub `app` object. When they want to emit events, they will:
+
+1. Write schemas for events they want to emit
+2. Register their schemas with the with the eventlogging library
+
+   ```python
+   self.app.event_log.register_schema
+   for schema_file in glob(os.path.join(here, 'event-schemas','*.json')):
+      with open(schema_file) as f:
+          self.event_log.register_schema(json.load(f))
+   ```
+3. Emit events wherever they need.
+
+   ```python
+   self.app.event_log.emit('kubespawner.hub.jupyter.org/pod-missing', 1, {
+     'pod_name': pod.metadata.name,
+     'node': pod.metadata.node
+   })
+   ```
+
+This would get routed to the appropriate sink if the schema is whitelisted.
+
+#### Services
+
+Services run as their own process, and hence do not have access to the JupyterHub
+`app` object. They should use the core eventlogging library directly, and admins
+should be able to configure it as they would a standalone application.
+
 ### JupyterLab
 
 There are quite a few analytics frameworks that send events directly from the browser, so the round trip to the server can be avoided in certain deployments. Additionally, JupyterLab also publishes "platform" events which are subscribed to and published to the event sinks.
@@ -236,9 +276,6 @@ Since JupyterLab is the user facing component, it also contains UX features to g
 * UI for opting in or opting out of telemetry data collection
 * UI for showing the list of events that are currently being collected.
 
-### JupyterHub
-
-(This section needs to be filled out)
 
 ### Jupyter Notebook (Classic) Frontend
 
