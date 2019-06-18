@@ -34,7 +34,7 @@ Telemetry data serves a number of purposes for organizations deploying Jupyter: 
 
 ## Proposed Enhancement
 
-The enhancement spans two categories - general concepts applicable across all Jupyter components, and the implementation for each concept for each Jupyter component.
+The enhancement spans two categories - general concepts applicable across all Jupyter components, and the implementation for each concept for each Jupyter component. This proposal covers the components required to publish and consume discrete events from the various components of the Jupyter ecosystem.
 
 **General concepts:**
 
@@ -78,11 +78,11 @@ Example event schema
 
 Schema validation is done in the core telemetry framework that routes events from publishers to sinks, so that each event sink does not need to implement schema validation.
 
-**Open Questions/TBD**:
-
-* List of rules for event schemas
-* How do organizations deploy custom schemas?
-* Where are the schemas for public events stored?
+Schemas are used at two places
+* During the emit run-time, for validating events before publishing to the configured event sink.
+  * The schemas are picked up from a side-car package for runtime validation to avoid the network call.
+* During analysis time, for discovering the available schemas and understanding the fields.
+  * Schema names are resolvable URLs for public events for discovery, and private events need not be resolvable but could be just `com.mycompany.myevent1`
 
 ### Event Sinks
 
