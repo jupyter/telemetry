@@ -218,6 +218,26 @@ Services run as their own process, and hence do not have access to the JupyterHu
 `app` object. They should use the core eventlogging library directly, and admins
 should be able to configure it as they would a standalone application.
 
+#### Authenticated routing service
+
+Events sent from user's notebook servers or client side interfaces directly to a
+sink are untrusted - they are from user controlled code & can be anything. It
+would be useful to provide a JupyterHub service that can validate that the
+users are who they say they are - even though the rest of the event data
+should be considered untrusted.
+
+This would expose a HTTP endpoint that can receive data as a sink from
+other parts of the ecosystem (Notebook, JupyterLab, classic notebook,
+other JupyterHub services). It would then add a metadata username field
+to each event, based on the JupyterHub authentication information sent
+alongside the request. The event will then be sent to the appropriate
+sink configured for this service.
+
+This is also helpful in smaller installations where there's no other
+centralized event collection mechanism (like fluentd, stackdriver, etc).
+Events can be sent here, and it can route them to an accessible location
+(like a database, or the filesystem)
+
 ### JupyterLab
 
 There are quite a few analytics frameworks that send events directly from the browser, so the round trip to the server can be avoided in certain deployments. Additionally, JupyterLab also publishes "platform" events which are subscribed to and published to the event sinks.
