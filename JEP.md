@@ -180,12 +180,16 @@ HTTP PUT /api/telemetry/event
 
 ### JupyterHub
 
-JupyterHub would use the same underlying python library as the notebook server, and be configured
-in the same way.
+JupyterHub would use the same [underlying python library](#python-event-sink-interface)
+as the notebook server, and be configured in the same way.
 
-JupyterHub relies on extension through Spawners, Authenticators, Proxies & Services to
-do most of its work. They would have interesting events to emit, so we should make sure
-they have easy ways to.
+JupyterHub relies on extension through
+[Spawners](https://jupyterhub.readthedocs.io/en/stable/reference/spawners.html),
+[Authenticators](https://jupyterhub.readthedocs.io/en/stable/reference/authenticators.html),
+[Proxies](https://jupyterhub.readthedocs.io/en/stable/api/spawner.html) &
+[Services](https://jupyterhub.readthedocs.io/en/stable/reference/services.html)
+to do most of its work. They would have interesting events to emit, so we should
+make sure they have easy ways to.
 
 #### Spawners, Authenticators & Proxies
 
@@ -226,7 +230,7 @@ would be useful to provide a JupyterHub service that can validate that the
 users are who they say they are - even though the rest of the event data
 should be considered untrusted.
 
-This would expose a HTTP endpoint that can receive data as a sink from
+This would expose a [REST Endpoint](#rest-endpoint) that can receive data as a sink from
 other parts of the ecosystem (Notebook, JupyterLab, classic notebook,
 other JupyterHub services). It would then add a metadata username field
 to each event, based on the JupyterHub authentication information sent
