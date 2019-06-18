@@ -82,7 +82,7 @@ Schemas are used at two places
 * During the emit run-time, for validating events before publishing to the configured event sink.
   * The schemas are picked up from a side-car package for runtime validation to avoid the network call.
 * During analysis time, for discovering the available schemas and understanding the fields.
-  * Schema names are resolvable URLs for public events for discovery, and private events need not be resolvable but could be just `com.mycompany.myevent1`
+  * Schema names are valid URIs. For public event discovery, these are resolvable, and private events could be just `com.mycompany.myevent1`
 
 ### Event Sinks
 
