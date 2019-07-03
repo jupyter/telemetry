@@ -1,0 +1,15 @@
+alembic
+async_generator>=1.8
+certipy>=0.1.2
+entrypoints
+jinja2
+oauthlib>=3.0
+pamela
+prometheus_client>=0.0.21
+python-dateutil
+requests
+SQLAlchemy>=1.1
+tornado>=5.0
+traitlets>=4.3.2
+jsonschema
+python-json-logger
