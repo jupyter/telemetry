@@ -1,15 +1,15 @@
 {
-  "name": "jupyterlab-telemetry",
+  "name": "jupyter-telemetry",
   "version": "0.1.0",
-  "description": "A JupyterLab extension for logging and telemetry of usage data",
+  "description": "A library for telemetry in Jupyter frontend applications.",
   "keywords": [
-    "extension",
+    "telemetry",
     "jupyter",
     "jupyterlab"
   ],
-  "homepage": "git@github.com:ian-r-rose/jupyterlab-telemetry.git",
+  "homepage": "git@github.com:jupyter/telemetry.git",
   "bugs": {
-    "url": "git@github.com:ian-r-rose/jupyterlab-telemetry.git/issues"
+    "url": "git@github.com:jupyter/telemetry.git/issues"
   },
   "license": "BSD-3-Clause",
   "author": "Project Jupyter",
@@ -21,27 +21,16 @@
   "types": "lib/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "git@github.com:ian-r-rose/jupyterlab-telemetry.git.git"
+    "url": "git@github.com:jupyter/telemetry.git"
   },
   "scripts": {
     "build": "tsc",
     "clean": "rimraf lib",
     "watch": "tsc -w"
   },
-  "dependencies": {
-    "@jupyterlab/application": "^0.19.1",
-    "@jupyterlab/apputils": "^0.19.1",
-    "@jupyterlab/coreutils": "^2.2.1",
-    "@jupyterlab/services": "^3.2.1",
-    "@phosphor/commands": "^1.4.0",
-    "@phosphor/coreutils": "^1.3.0",
-    "@phosphor/widgets": "^1.5.0"
-  },
+  "dependencies": {},
   "devDependencies": {
     "rimraf": "^2.6.1",
     "typescript": "^3.4.5"
-  },
-  "jupyterlab": {
-    "extension": true
   }
 }

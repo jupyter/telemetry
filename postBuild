@@ -1,9 +1,0 @@
-#!/bin/bash
-set -euo pipefail
-
-pip install --no-cache-dir --editable .
-jupyter serverextension enable --py jupyterlab_telemetry --sys-prefix
-
-jlpm install
-jlpm run build
-jupyter labextension link .

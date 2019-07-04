@@ -1,25 +1,13 @@
 """
 Setup module for the jupyterlab-telemetry
 """
-import setuptools
-from setupbase import (
-    create_cmdclass, ensure_python, find_packages, get_version
-    )
+from setuptools import setup, find_packages
 
-data_files_spec = [(
-    'etc/jupyter/jupyter_notebook_config.d',
-    'jupyter-config/jupyter_notebook_config.d',
-    'jupyterlab_telemetry.json'
-),]
-
-cmdclass = create_cmdclass(data_files_spec=data_files_spec)
-
-setup_dict = dict(
-    name='jupyterlab_telemetry',
-    version=get_version("jupyterlab_telemetry/_version.py"),
-    description='A Jupyter Notebook server extension which receives and stores telemetry data from the client.',
+setup(
+    name='jupyter_telemetry',
+    version='0.0.1',
+    description='Jupyter telemetry library',
     packages=find_packages(),
-    cmdclass=cmdclass,
     author          = 'Jupyter Development Team',
     author_email    = 'jupyter@googlegroups.com',
     url             = 'http://jupyter.org',
@@ -37,17 +25,5 @@ setup_dict = dict(
     ],
     install_requires=[
         'notebook',
-        'jupyterlab'
     ],
 )
-
-try:
-    ensure_python(setup_dict["python_requires"].split(','))
-except ValueError as e:
-    raise  ValueError("{:s}, to use {} you must use python {} ".format(
-                          e,
-                          setup_dict["name"],
-                          setup_dict["python_requires"])
-                     )
-
-setuptools.setup(**setup_dict)
