@@ -1,2 +1,2 @@
-# telemetry
-Telemetry for Jupyter
+# Telemetry
+Telemetry for Jupyter Applications and extensions.

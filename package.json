@@ -1,0 +1,36 @@
+{
+  "name": "jupyter-telemetry",
+  "version": "0.1.0",
+  "description": "A library for telemetry in Jupyter frontend applications.",
+  "keywords": [
+    "telemetry",
+    "jupyter",
+    "jupyterlab"
+  ],
+  "homepage": "git@github.com:jupyter/telemetry.git",
+  "bugs": {
+    "url": "git@github.com:jupyter/telemetry.git/issues"
+  },
+  "license": "BSD-3-Clause",
+  "author": "Project Jupyter",
+  "files": [
+    "lib/**/*.{d.ts,eot,gif,html,jpg,js,js.map,json,png,svg,woff2,ttf}",
+    "style/**/*.{css,eot,gif,html,jpg,json,png,svg,woff2,ttf}"
+  ],
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:jupyter/telemetry.git"
+  },
+  "scripts": {
+    "build": "tsc",
+    "clean": "rimraf lib",
+    "watch": "tsc -w"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "rimraf": "^2.6.1",
+    "typescript": "^3.4.5"
+  }
+}
