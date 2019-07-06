@@ -33,7 +33,7 @@ jobs:
             . venv/bin/activate
             # Have CircleCI display pretty test result output
             mkdir test-reports
-            py.test --junitxml=test-reports/junit.xml jupyter_telemetry/tests/
+            py.test --cov=jupyter_telemetry --junitxml=test-reports/junit.xml tests/
 
       - store_test_results:
           path: test-reports
