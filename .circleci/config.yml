@@ -34,6 +34,8 @@ jobs:
             # Have CircleCI display pretty test result output
             mkdir test-reports
             py.test --cov=jupyter_telemetry --junitxml=test-reports/junit.xml tests/
+            # Upload coverage info to codecov
+            codecov
 
       - store_test_results:
           path: test-reports
