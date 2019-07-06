@@ -41,6 +41,8 @@ class EventLog(Configurable):
     """
     Send structured events to a logging sink
     """
+    # Traitlets can't take non-pickleable objects, so can't pass in
+    # logging handlers directly. This is a temporary hack we should fix?
     handlers_maker = Callable(
         None,
         config=True,
@@ -69,6 +71,7 @@ class EventLog(Configurable):
         self.log = logging.getLogger(__name__)
         # We don't want events to show up in the default logs
         self.log.propagate = False
+        # We will use log.info to emit
         self.log.setLevel(logging.INFO)
 
         if self.handlers_maker:
@@ -106,9 +109,9 @@ class EventLog(Configurable):
 
         self.schemas[(schema['$id'], schema['version'])] = schema
 
-    def emit(self, schema_name, version, event):
+    def record_event(self, schema_name, version, event):
         """
-        Emit event with given schema / version in a capsule.
+        Record given event with schema has occured.
         """
         if not (self.handlers_maker and schema_name in self.allowed_schemas):
             # if handler isn't set up or schema is not explicitly whitelisted,
