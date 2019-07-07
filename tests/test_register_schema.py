@@ -3,7 +3,7 @@ import json
 import jsonschema
 import logging
 import pytest
-import tempfile
+import io
 
 from jupyter_telemetry.eventlog import EventLog
 
@@ -50,28 +50,28 @@ def test_record_event():
             },
         },
     }
-    with tempfile.NamedTemporaryFile(delete=False) as f:
-        handler = logging.FileHandler(f.name)
-        el = EventLog(handlers_maker=lambda el: [handler])
-        el.register_schema(schema)
-        el.allowed_schemas = ['test/test']
 
-        el.record_event('test/test', 1, {
-            'something': 'blah',
-        })
-        handler.flush()
+    output = io.StringIO()
+    handler = logging.StreamHandler(output)
+    el = EventLog(handlers_maker=lambda el: [handler])
+    el.register_schema(schema)
+    el.allowed_schemas = ['test/test']
 
-        f.seek(0)
-        event_capsule = json.load(f)
+    el.record_event('test/test', 1, {
+        'something': 'blah',
+    })
+    handler.flush()
 
-        assert '__timestamp__' in event_capsule
-        # Remove timestamp from capsule when checking equality, since it is gonna vary
-        del event_capsule['__timestamp__']
-        assert event_capsule == {
-            '__schema__': 'test/test',
-            '__version__': 1,
-            'something': 'blah'
-        }
+    event_capsule = json.loads(output.getvalue())
+
+    assert '__timestamp__' in event_capsule
+    # Remove timestamp from capsule when checking equality, since it is gonna vary
+    del event_capsule['__timestamp__']
+    assert event_capsule == {
+        '__schema__': 'test/test',
+        '__version__': 1,
+        'something': 'blah'
+    }
 
 
 def test_allowed_schemas():
@@ -87,19 +87,20 @@ def test_allowed_schemas():
             },
         },
     }
-    with tempfile.NamedTemporaryFile(delete=False) as f:
-        handler = logging.FileHandler(f.name)
-        el = EventLog(handlers_maker=lambda el: [handler])
-        # Just register schema, but do not mark it as allowed
-        el.register_schema(schema)
 
-        el.record_event('test/test', 1, {
-            'something': 'blah',
-        })
-        handler.flush()
+    output = io.StringIO()
+    handler = logging.StreamHandler(output)
+    el = EventLog(handlers_maker=lambda el: [handler])
+    # Just register schema, but do not mark it as allowed
+    el.register_schema(schema)
 
-        f.seek(0)
-        assert f.read() == b''
+    el.record_event('test/test', 1, {
+        'something': 'blah',
+    })
+    handler.flush()
+
+
+    assert output.getvalue() == ''
 
 def test_record_event_badschema():
     """
@@ -117,14 +118,13 @@ def test_record_event_badschema():
             }
         }
     }
-    with tempfile.NamedTemporaryFile() as f:
-        handler = logging.FileHandler(f.name)
-        el = EventLog(handlers_maker=lambda el: [handler])
-        el.register_schema(schema)
-        el.allowed_schemas = ['test/test']
 
-        with pytest.raises(jsonschema.ValidationError):
-            el.record_event('test/test', 1, {
-                'something': 'blah',
-                'status': 'not-in-enum'
-            })
+    el = EventLog(handlers_maker=lambda el: [logging.NullHandler()])
+    el.register_schema(schema)
+    el.allowed_schemas = ['test/test']
+
+    with pytest.raises(jsonschema.ValidationError):
+        el.record_event('test/test', 1, {
+            'something': 'blah',
+            'status': 'not-in-enum'
+        })
