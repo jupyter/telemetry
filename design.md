@@ -295,16 +295,102 @@ inspiration from.
    to turn it off. We could possibly let admins configure opt-in /
    opt-out options.
 
+## Schema naming recommendations
+
+Schema naming conventions are very important, and affect multiple stakeholders.
+
+1. **Analysts** are affected the most. When looking at event data,
+   they should have an easy, reliable way to get the JSON schema
+   referenced there. This schema will have documentation describing
+   the fields, which should be of immense help in understanding the
+   data they are working with.
+
+2. **Developers** want to avoid cumbersome, hard to remember names when
+   recording events. They might also have private schemas they do
+   not want to publicly publish. There should also be no central
+   naming authority for event schemas, as that will slow down
+   development. They also want their code to be fast, so recording
+   events should never require a network call to fetch schemas.
+
+So the goal should be to provide a set of naming recommendations that
+can be implemented as a standalone utility for analysts to get the JSON
+schema from a given schema name. This could even be deployed as a
+small public tool that can resolve public schemas and display them
+in a nice readable format, like [this](https://meta.wikimedia.org/wiki/Schema:ServerSideAccountCreation).
+
+There's lots of prior art here, but we'll steal most of our
+recommendations from [go's remote package naming conventions](https://golang.org/cmd/go/#hdr-Remote_import_paths).
+
+1. All schema names **must** be valid URIs, with no protocol part.
+   This is the **only** requirement - these URIs need not actually
+   resolve to anything. This lets developers get going quickly,
+   and makes private schemas easy to do.
+
+2. `jupyter.org` URIs will be special cased. `jupyter.org/<project>/<schema>`
+   would resolve to:
+
+   a. The github repository `jupyter/<project-name>`
+   b. The directory `event-schemas/<schema>` in the project
+   c. Files inside this directory should be named `v<version>.json`, where
+      `<version>` is the integer version of the schema being used. All
+      schema versions must be preserved in the repository.
+
+3. `lab.jupyter.org`, `hub.jupyter.org` and `ipython.jupyter.org` URIs will
+    also be specialcased, pointing to projects under the `jupyterlab`,
+    `jupyterhub` and `ipython` github organizations respectively.
+
+4. For arbitrary other public projects, we assume they most likely use a
+   public version control repository. Here we borrow from go's remote syntax
+   for vcs repos - looking for a version control system specific suffix in
+   any part of the path.
+
+   For example, if I want to add eventlogging to the project hosted at
+   `https://github.com/yuvipanda/hubploy.git`, the recommendation is
+   that I use URIs of the form `github.com/yuvipanda/hubploy.git/<schema-name>`.
+   The resolver can then look for the directory `event-schemas/<schema-name>`
+   after cloning the repository, and find files in there of the form
+   `v<version>.json`, same as the `jupyter.org` special case.
+
+   The suggestion is that `jupyter.org` and other special cases are just
+   shortcuts for expanding into the full git repo URL form.
+
+5. If a git repository is not used, the URI is treated as a https endpoint,
+   and fetched. Different actions are taken based on the `Content-Type` of
+   the response.
+
+   a. If `application/json` or `application/json+schema`, the response is
+      assumed to be the actual schema.
+
+   b. If `text/html`, we look for a `<link>` tag that can point us to a
+      different URI to resolve. We use the standard `rel='alternate'`
+      attribute, with `type='application/json+schema'`, and the `href`
+      attribute pointing to another URI. The entire resolution algorithm
+      is then run on this URI, until a schema is produced.
+
+      This is slightly different than what go does, since they just invented
+      their own `<meta>` tag. We instead use existing standard `<link>`
+      tags for the same purpose.
+
+      This lets URLs provide a human readable version directly with HTML
+      for user consumption, with a link to a machine readable version
+      for computer usage.
+
+6. If none of these work, the URI is assumed to be known to the end user.
+   This might be likely for internal, private schemas that are made available
+   to specific internal users only. Even for private schemas, ideally developers
+   will follow the same naming recommendations as specified here - just for
+   the sake of analysts. However, they might already have other systems
+   of documentation in place, and we do not enforce any of this.
+
+A small reference tool that implements schema resolution using these rules
+should be produced to see what problems we end up with, and tinker the design
+accordingly.
+
 ## Open questions
 
 Here's a list of open questions.
 
-1. How to reference schemas in ways people can find them? Current
-   example points to URLs that don't exist, purely as a way to
-   namespace them. Perhaps we should have them point to URLs that
-   *do* exist?
-
-2. How do we signal strongly that telemetry / events are never sent
+1. How do we signal strongly that telemetry / events are never sent
    to the Jupyter project / 3rd party unless you explicitly configure
    it to do so? This is a common meaning of the word 'telemetry'
    today, so we need to make sure we communicate clearly what this
