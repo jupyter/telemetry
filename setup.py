@@ -14,7 +14,7 @@ setup(
     license         = 'BSD',
     platforms       = "Linux, Mac OS X, Windows",
     keywords        = ['Jupyter', 'JupyterLab'],
-    python_requires = '>=3.6',
+    python_requires = '>=3.5',
     classifiers     = [
         'Intended Audience :: Developers',
         'Intended Audience :: System Administrators',
@@ -27,6 +27,5 @@ setup(
         'jsonschema',
         'python-json-logger',
         'traitlets',
-        'notebook',
     ],
 )
