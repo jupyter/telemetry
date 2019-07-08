@@ -24,6 +24,9 @@ setup(
         'Programming Language :: Python :: 3',
     ],
     install_requires=[
+        'jsonschema',
+        'python-json-logger',
+        'traitlets',
         'notebook',
     ],
 )
