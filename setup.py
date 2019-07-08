@@ -26,6 +26,6 @@ setup(
     install_requires=[
         'jsonschema',
         'python-json-logger',
-        'traitlets',
+        'traitlets'
     ],
 )
