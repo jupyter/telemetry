@@ -11,8 +11,10 @@ class HandlersList(TraitType):
 
     def validate_elements(self, obj, value):
         if len(value) > 0:
-            if isinstance(value[0], logging.Handler) is False:
-                self.element_error(obj)
+            # Check that all elements are logging handlers.
+            for el in value:
+                if isinstance(el, logging.Handler) is False:
+                    self.element_error(obj)
 
     def element_error(self, obj):
         raise TraitError(
