@@ -1,44 +1,40 @@
 import pytest
-
 import logging 
-
-from traitlets import HasTraits
-from traitlets.tests.test_traitlets import TraitTestBase
+from traitlets import HasTraits, TraitError
 from jupyter_telemetry.traits import HandlersList
 
 
-class HandlersListTrait(HasTraits):
-    
-    value = HandlersList(
+class HasHandlerList(HasTraits):
+    handlers_list = HandlersList(
         None,
         allow_none=True
     )
 
 
-class TestHandlersList(TraitTestBase):
-
-    obj = HandlersListTrait()
-
-    _default_value = None
-    _good_values = [
-        [logging.NullHandler(), logging.NullHandler()]
+def test_good_handlers_list_value():
+    handlers = [
+        logging.NullHandler(), 
+        logging.NullHandler()
     ]
-    _bad_values = [
-        [0, 1],
-        ['a', 'b'],
-        [logging.NullHandler(), 0]
+    obj = HasHandlerList(
+        handlers_list=handlers
+    )
+    assert obj.handlers_list
+
+def test_bad_handlers_list_values():
+    handlers = [0, 1]
+    
+    with pytest.raises(TraitError):
+        obj = HasHandlerList(
+            handlers_list=handlers
+        )
+
+def test_mixed_handlers_list_values():
+    handlers = [
+        logging.NullHandler(), 
+        1
     ]
-
-    def assertEqual(self, a, b):
-        # Hijack assertEquals method to check for comparison between two callables
-        if callable(a) and callable(b):
-            pass
-        else:
-            super(TestHandlersList, self).assertEqual(a, b)
-
-    def coerce(self, value):
-        # Coerce value when comparing the trait's value to
-        # the given value.
-        def handlers_list():
-            return value
-        return handlers_list
+    with pytest.raises(TraitError):
+        obj = HasHandlerList(
+            handlers_list=handlers
+        )

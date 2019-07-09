@@ -31,7 +31,6 @@ class HandlersList(TraitType):
             def handlers_list(): 
                 return value
             return handlers_list
-        # If already a callable, check that a list is returned.
         elif callable(value):
             return value
         else:
