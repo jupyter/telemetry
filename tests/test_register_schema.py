@@ -8,9 +8,9 @@ import io
 from jupyter_telemetry.eventlog import EventLog
 
 
-def test_register_invalid():
+def test_register_invalid_schema():
     """
-    Test registering invalid schemas fails
+    Invalid JSON Schemas should fail registration
     """
     el = EventLog()
     with pytest.raises(jsonschema.SchemaError):
@@ -19,6 +19,13 @@ def test_register_invalid():
             'properties': True
         })
 
+def test_missing_required_properties():
+    """
+    id and $version are required properties in our schemas.
+
+    They aren't required by JSON Schema itself
+    """
+    el = EventLog()
     with pytest.raises(ValueError):
         el.register_schema({
             'properties': {}
@@ -27,19 +34,30 @@ def test_register_invalid():
     with pytest.raises(ValueError):
         el.register_schema({
             '$id': 'something',
-            '$version': 1,
-            'properties': {
-                'timestamp': {
-                    'type': 'string'
-                }
-            }
+            '$version': 1, # This should been 'version'
         })
 
+def test_reserved_properties():
+    """
+    User schemas can't have properties starting with __
 
+    These are reserved
+    """
+    el = EventLog()
+    with pytest.raises(ValueError):
+        el.register_schema({
+            '$id': 'test/test',
+            'version': 1,
+            'properties': {
+                '__fail__': {
+                    'type': 'string'
+                },
+            },
+        })
 
 def test_record_event():
     """
-    Test emitting basic events works
+    Simple test for emitting valid events
     """
     schema = {
         '$id': 'test/test',
@@ -76,7 +94,7 @@ def test_record_event():
 
 def test_allowed_schemas():
     """
-    Test no events are emitted if schema isn't explicitly allowed
+    Events should be emitted only if their schemas are allowed
     """
     schema = {
         '$id': 'test/test',
@@ -104,7 +122,7 @@ def test_allowed_schemas():
 
 def test_record_event_badschema():
     """
-    Test failure when event doesn't match schema
+    Fail fast when an event doesn't conform to its schema
     """
     schema = {
         '$id': 'test/test',
