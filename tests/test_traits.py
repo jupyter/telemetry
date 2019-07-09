@@ -19,7 +19,7 @@ def test_good_handlers_list_value():
     obj = HasHandlersList(
         handlers_list=handlers
     )
-    assert obj.handlers_list
+    assert obj.handlers_list() == handlers
 
 def test_bad_handlers_list_values():
     handlers = [0, 1]
