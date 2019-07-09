@@ -1,0 +1,40 @@
+import logging
+from traitlets import TraitType, TraitError, validate
+
+
+class HandlersList(TraitType):
+    """A trait that takes a list of logging handlers and converts
+    it to a callable that returns that list (thus, making this
+    trait pickleable). 
+    """
+    info_text = "a list of logging handlers"
+
+    def validate_elements(self, obj, value):
+        if len(value) > 0:
+            if isinstance(value[0], logging.Handler) is False:
+                self.element_error(obj)
+
+    def element_error(self, obj):
+        raise TraitError(
+            "Elements in the '{}' trait of an {} instance " \
+            "must be Python `logging` handler instances."\
+            .format(self.name, obj.__class__.__name__)
+        )
+
+    def validate(self, obj, value):
+        # If given a list, convert to callable that returns the list.
+        if type(value) == list:
+            self.validate_elements(obj, value)
+            # Wrap list with callable
+            def handlers_list(): 
+                return value
+            return handlers_list
+        # If already a callable, check that a list is returned.
+        elif callable(value):
+            out = value()
+            if type(out) != list:
+                self.error(obj, value)
+            self.validate_elements(obj, out)
+            return value
+        else:
+            self.error(obj, value)

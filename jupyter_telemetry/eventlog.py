@@ -7,27 +7,14 @@ import logging
 from datetime import datetime
 import jsonschema
 from pythonjsonlogger import jsonlogger
-from traitlets import TraitType, List
+from traitlets import List 
 from ruamel.yaml import YAML
 import json
-import six
+
+
+from .traits import HandlersList
 
 yaml = YAML(typ='safe')
-
-
-class Callable(TraitType):
-    """
-    A trait which is callable.
-
-    Classes are callable, as are instances
-    with a __call__() method.
-    """
-    info_text = 'a callable'
-    def validate(self, obj, value):
-        if six.callable(value):
-            return value
-        else:
-            self.error(obj, value)
 
 def _skip_message(record, **kwargs):
     """
@@ -44,15 +31,12 @@ class EventLog(Configurable):
     """
     Send structured events to a logging sink
     """
-    # Traitlets can't take non-pickleable objects, so can't pass in
-    # logging handlers directly. This is a temporary hack we should fix?
-    handlers_maker = Callable(
+    handlers_list = HandlersList(
         None,
         config=True,
         allow_none=True,
-        help="""
-        Callable that returns a list of logging.Handler instances to send events to.
-
+        help="""A list of logging.Handler instances to send events to.
+        
         When set to None (the default), events are discarded.
         """
     )
@@ -77,8 +61,8 @@ class EventLog(Configurable):
         # We will use log.info to emit
         self.log.setLevel(logging.INFO)
 
-        if self.handlers_maker:
-            self.handlers = self.handlers_maker(self)
+        if self.handlers_list:
+            self.handlers = self.handlers_list()
             formatter = jsonlogger.JsonFormatter(json_serializer=_skip_message)
             for handler in self.handlers:
                 handler.setFormatter(formatter)
