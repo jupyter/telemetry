@@ -31,10 +31,6 @@ class HandlersList(TraitType):
             return handlers_list
         # If already a callable, check that a list is returned.
         elif callable(value):
-            out = value()
-            if type(out) != list:
-                self.error(obj, value)
-            self.validate_elements(obj, out)
             return value
         else:
             self.error(obj, value)

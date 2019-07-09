@@ -1,16 +1,15 @@
 """
 Emit structured, discrete events when various actions happen.
 """
-from traitlets.config import Configurable
-
 import logging
-from datetime import datetime
-import jsonschema
-from pythonjsonlogger import jsonlogger
-from traitlets import List 
-from ruamel.yaml import YAML
 import json
+import jsonschema
+from datetime import datetime
+from pythonjsonlogger import jsonlogger
+from ruamel.yaml import YAML
 
+from traitlets import List 
+from traitlets.config import Configurable
 
 from .traits import HandlersList
 
@@ -110,7 +109,7 @@ class EventLog(Configurable):
         """
         Record given event with schema has occured.
         """
-        if not (self.handlers_maker and schema_name in self.allowed_schemas):
+        if not (self.handlers_list and schema_name in self.allowed_schemas):
             # if handler isn't set up or schema is not explicitly whitelisted,
             # don't do anything
             return
