@@ -92,6 +92,7 @@ class EventLog(Configurable):
 
         Supports both JSON & YAML files.
         """
+        # Just use YAML loader for everything, since all valid JSON is valid YAML
         with open(filename) as f:
             self.register_schema(yaml.load(f))
 
