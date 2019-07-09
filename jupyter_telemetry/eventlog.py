@@ -8,8 +8,11 @@ from datetime import datetime
 import jsonschema
 from pythonjsonlogger import jsonlogger
 from traitlets import TraitType, List
+from ruamel.yaml import YAML
 import json
 import six
+
+yaml = YAML(typ='safe')
 
 
 class Callable(TraitType):
@@ -82,6 +85,15 @@ class EventLog(Configurable):
                 self.log.addHandler(handler)
 
         self.schemas = {}
+
+    def register_schema_file(self, filename):
+        """
+        Convenience function for registering a JSON schema from a filepath
+
+        Supports both JSON & YAML files.
+        """
+        with open(filename) as f:
+            self.register_schema(yaml.load(f))
 
     def register_schema(self, schema):
         """

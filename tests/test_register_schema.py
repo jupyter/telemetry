@@ -3,6 +3,8 @@ import json
 import jsonschema
 import logging
 import pytest
+import tempfile
+from ruamel.yaml import YAML
 import io
 
 from jupyter_telemetry.eventlog import EventLog
@@ -91,6 +93,32 @@ def test_record_event():
         'something': 'blah'
     }
 
+def test_register_schema_file():
+    """
+    Register schema from a file
+    """
+    schema = {
+        '$id': 'test/test',
+        'version': 1,
+        'properties': {
+            'something': {
+                'type': 'string'
+            },
+        },
+    }
+
+    el = EventLog()
+
+    yaml = YAML(typ='safe')
+    with tempfile.NamedTemporaryFile(mode='w') as f:
+        yaml.dump(schema, f)
+        f.flush()
+
+        f.seek(0)
+
+        el.register_schema_file(f.name)
+
+    assert schema in el.schemas.values()
 
 def test_allowed_schemas():
     """
