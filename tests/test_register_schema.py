@@ -73,7 +73,7 @@ def test_record_event():
 
     output = io.StringIO()
     handler = logging.StreamHandler(output)
-    el = EventLog(handlers_list=[handler])
+    el = EventLog(handlers=[handler])
     el.register_schema(schema)
     el.allowed_schemas = ['test/test']
 
@@ -136,7 +136,7 @@ def test_allowed_schemas():
 
     output = io.StringIO()
     handler = logging.StreamHandler(output)
-    el = EventLog(handlers_list=[handler])
+    el = EventLog(handlers=[handler])
     # Just register schema, but do not mark it as allowed
     el.register_schema(schema)
 
@@ -165,7 +165,7 @@ def test_record_event_badschema():
         }
     }
 
-    el = EventLog(handlers_list=[logging.NullHandler()])
+    el = EventLog(handlers=[logging.NullHandler()])
     el.register_schema(schema)
     el.allowed_schemas = ['test/test']
 

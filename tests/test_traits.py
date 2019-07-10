@@ -1,40 +1,40 @@
 import pytest
 import logging 
 from traitlets import HasTraits, TraitError
-from jupyter_telemetry.traits import HandlersList
+from jupyter_telemetry.traits import Handlers
 
 
-class HasHandlersList(HasTraits):
-    handlers_list = HandlersList(
+class HasHandlers(HasTraits):
+    handlers = Handlers(
         None,
         allow_none=True
     )
 
 
-def test_good_handlers_list_value():
+def test_good_handlers_value():
     handlers = [
         logging.NullHandler(), 
         logging.NullHandler()
     ]
-    obj = HasHandlersList(
-        handlers_list=handlers
+    obj = HasHandlers(
+        handlers=handlers
     )
-    assert obj.handlers_list() == handlers
+    assert obj.handlers == handlers
 
-def test_bad_handlers_list_values():
+def test_bad_handlers_values():
     handlers = [0, 1]
     
     with pytest.raises(TraitError):
-        obj = HasHandlersList(
-            handlers_list=handlers
+        obj = HasHandlers(
+            handlers=handlers
         )
 
-def test_mixed_handlers_list_values():
+def test_mixed_handlers_values():
     handlers = [
         logging.NullHandler(), 
         1
     ]
     with pytest.raises(TraitError):
-        obj = HasHandlersList(
-            handlers_list=handlers
+        obj = HasHandlers(
+            handlers=handlers
         )
