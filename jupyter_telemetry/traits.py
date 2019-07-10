@@ -2,7 +2,7 @@ import logging
 from traitlets import TraitType, TraitError, validate
 
 
-class HandlersList(TraitType):
+class Handlers(TraitType):
     """A trait that takes a list of logging handlers and converts
     it to a callable that returns that list (thus, making this
     trait pickleable). 

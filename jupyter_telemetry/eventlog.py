@@ -11,7 +11,7 @@ from ruamel.yaml import YAML
 from traitlets import List 
 from traitlets.config import Configurable, Config
 
-from .traits import HandlersList
+from .traits import Handlers
 
 yaml = YAML(typ='safe')
 
@@ -30,7 +30,7 @@ class EventLog(Configurable):
     """
     Send structured events to a logging sink
     """
-    handlers = HandlersList(
+    handlers = Handlers(
         [],
         config=True,
         allow_none=True,
