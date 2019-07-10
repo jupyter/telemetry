@@ -5,7 +5,7 @@ from jupyter_telemetry.traits import HandlersList
 
 
 class HasHandlersList(HasTraits):
-    handlers_list = HandlersList(
+    handlers = HandlersList(
         None,
         allow_none=True
     )
@@ -17,16 +17,16 @@ def test_good_handlers_list_value():
         logging.NullHandler()
     ]
     obj = HasHandlersList(
-        handlers_list=handlers
+        handlers=handlers
     )
-    assert obj.handlers_list() == handlers
+    assert obj.handlers == handlers
 
 def test_bad_handlers_list_values():
     handlers = [0, 1]
     
     with pytest.raises(TraitError):
         obj = HasHandlersList(
-            handlers_list=handlers
+            handlers=handlers
         )
 
 def test_mixed_handlers_list_values():
@@ -36,5 +36,5 @@ def test_mixed_handlers_list_values():
     ]
     with pytest.raises(TraitError):
         obj = HasHandlersList(
-            handlers_list=handlers
+            handlers=handlers
         )

@@ -24,14 +24,18 @@ class HandlersList(TraitType):
         )
 
     def validate(self, obj, value):
-        # If given a list, convert to callable that returns the list.
-        if type(value) == list:
+        # If given a callable, call it and set the
+        # value of this trait to the returned list. 
+        # Verify that the callable returns a list
+        # of logging handler instances.
+        if callable(value):
+            out = value()
+            self.validate_elements(obj, out)
+            return out
+        # If a list, check it's elements to verify
+        # that each element is a logging handler instance.
+        elif type(value) == list:
             self.validate_elements(obj, value)
-            # Wrap list with callable
-            def handlers_list(): 
-                return value
-            return handlers_list
-        elif callable(value):
             return value
         else:
             self.error(obj, value)

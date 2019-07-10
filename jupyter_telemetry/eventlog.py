@@ -9,7 +9,7 @@ from pythonjsonlogger import jsonlogger
 from ruamel.yaml import YAML
 
 from traitlets import List 
-from traitlets.config import Configurable
+from traitlets.config import Configurable, Config
 
 from .traits import HandlersList
 
@@ -30,8 +30,8 @@ class EventLog(Configurable):
     """
     Send structured events to a logging sink
     """
-    handlers_list = HandlersList(
-        None,
+    handlers = HandlersList(
+        [],
         config=True,
         allow_none=True,
         help="""A list of logging.Handler instances to send events to.
@@ -60,14 +60,30 @@ class EventLog(Configurable):
         # We will use log.info to emit
         self.log.setLevel(logging.INFO)
 
-        if self.handlers_list:
-            self.handlers = self.handlers_list()
+        if self.handlers:
             formatter = jsonlogger.JsonFormatter(json_serializer=_skip_message)
             for handler in self.handlers:
                 handler.setFormatter(formatter)
                 self.log.addHandler(handler)
 
         self.schemas = {}
+
+    def _load_config(self, cfg, section_names=None, traits=None):
+        """Load EventLog traits from a Config object, patching the
+        handlers trait in the Config object to avoid deepcopy errors.
+
+        """
+        my_cfg = self._find_my_config(cfg)
+        handlers = my_cfg.pop("handlers", [])
+
+        # Turn handlers list into a pickeable function    
+        def get_handlers():
+            return handlers
+        my_cfg["handlers"] = get_handlers
+
+        # Build a new eventlog config object.
+        eventlog_cfg = Config({"EventLog": my_cfg})
+        super(EventLog, self)._load_config(eventlog_cfg, section_names=None, traits=None)
 
     def register_schema_file(self, filename):
         """
@@ -109,7 +125,7 @@ class EventLog(Configurable):
         """
         Record given event with schema has occured.
         """
-        if not (self.handlers_list and schema_name in self.allowed_schemas):
+        if not (self.handlers and schema_name in self.allowed_schemas):
             # if handler isn't set up or schema is not explicitly whitelisted,
             # don't do anything
             return
