@@ -37,6 +37,11 @@ jobs:
             # Upload coverage info to codecov
             codecov
 
+      - run:
+          name: run linter
+          command: |
+            python -m flake8 jupyter_telemetry --max-line-length 120
+
       - store_test_results:
           path: test-reports
       - store_artifacts:
