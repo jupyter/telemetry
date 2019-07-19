@@ -40,7 +40,7 @@ jobs:
       - run:
           name: run linter
           command: |
-            python -m flake8 jupyter_telemetry --max-line-length 120
+            python -m flake8 jupyter_telemetry
 
       - store_test_results:
           path: test-reports
