@@ -13,7 +13,7 @@ setup(
     url             = 'http://jupyter.org',
     license         = 'BSD',
     platforms       = "Linux, Mac OS X, Windows",
-    keywords        = ['Jupyter', 'JupyterLab', 'Notebook'],
+    keywords        = ['Jupyter', 'JupyterLab'],
     python_requires = '>=3.5',
     classifiers     = [
         'Intended Audience :: Developers',
