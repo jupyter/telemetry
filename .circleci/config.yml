@@ -40,7 +40,8 @@ jobs:
       - run:
           name: run linter
           command: |
-            python -m flake8 jupyter_telemetry
+            . venv/bin/activate
+            python3 -m flake8 jupyter_telemetry
 
       - store_test_results:
           path: test-reports
