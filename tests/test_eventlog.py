@@ -21,16 +21,18 @@ c.EventLog.handlers = [
 ]
 """
 
+
 def get_config_from_file(path, content):
     # Write config file
     filename = 'config.py'
     config_file = path / filename
-    config_file.write_text(content)    
+    config_file.write_text(content)
 
     # Load written file.
     loader = PyFileConfigLoader(filename, path=str(path))
     cfg = loader.load_config()
     return cfg
+
 
 def test_good_config_file(tmp_path):
     cfg = get_config_from_file(tmp_path, GOOD_CONFIG)
@@ -48,5 +50,3 @@ def test_bad_config_file(tmp_path):
 
     with pytest.raises(TraitError):
         e = EventLog(config=cfg)
-
-

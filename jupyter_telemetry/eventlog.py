@@ -1,19 +1,20 @@
 """
 Emit structured, discrete events when various actions happen.
 """
-import logging
 import json
-import jsonschema
+import logging
 from datetime import datetime
+
+import jsonschema
 from pythonjsonlogger import jsonlogger
 from ruamel.yaml import YAML
-
-from traitlets import List 
+from traitlets import List
 from traitlets.config import Configurable, Config
 
 from .traits import Handlers
 
 yaml = YAML(typ='safe')
+
 
 def _skip_message(record, **kwargs):
     """
@@ -35,7 +36,7 @@ class EventLog(Configurable):
         config=True,
         allow_none=True,
         help="""A list of logging.Handler instances to send events to.
-        
+
         When set to None (the default), events are discarded.
         """
     )
@@ -76,9 +77,10 @@ class EventLog(Configurable):
         my_cfg = self._find_my_config(cfg)
         handlers = my_cfg.pop("handlers", [])
 
-        # Turn handlers list into a pickeable function    
+        # Turn handlers list into a pickeable function
         def get_handlers():
             return handlers
+
         my_cfg["handlers"] = get_handlers
 
         # Build a new eventlog config object.
@@ -123,7 +125,7 @@ class EventLog(Configurable):
 
     def record_event(self, schema_name, version, event):
         """
-        Record given event with schema has occured.
+        Record given event with schema has occurred.
         """
         if not (self.handlers and schema_name in self.allowed_schemas):
             # if handler isn't set up or schema is not explicitly whitelisted,

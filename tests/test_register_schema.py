@@ -1,11 +1,11 @@
-from contextlib import redirect_stderr
-import json
-import jsonschema
-import logging
-import pytest
-import tempfile
-from ruamel.yaml import YAML
 import io
+import json
+import logging
+import tempfile
+
+import jsonschema
+import pytest
+from ruamel.yaml import YAML
 
 from jupyter_telemetry.eventlog import EventLog
 
@@ -20,6 +20,7 @@ def test_register_invalid_schema():
             # Totally invalid
             'properties': True
         })
+
 
 def test_missing_required_properties():
     """
@@ -36,8 +37,9 @@ def test_missing_required_properties():
     with pytest.raises(ValueError):
         el.register_schema({
             '$id': 'something',
-            '$version': 1, # This should been 'version'
+            '$version': 1,  # This should been 'version'
         })
+
 
 def test_reserved_properties():
     """
@@ -56,6 +58,7 @@ def test_reserved_properties():
                 },
             },
         })
+
 
 def test_record_event():
     """
@@ -93,6 +96,7 @@ def test_record_event():
         'something': 'blah'
     }
 
+
 def test_register_schema_file():
     """
     Register schema from a file
@@ -120,6 +124,7 @@ def test_register_schema_file():
 
     assert schema in el.schemas.values()
 
+
 def test_allowed_schemas():
     """
     Events should be emitted only if their schemas are allowed
@@ -145,8 +150,8 @@ def test_allowed_schemas():
     })
     handler.flush()
 
-
     assert output.getvalue() == ''
+
 
 def test_record_event_badschema():
     """

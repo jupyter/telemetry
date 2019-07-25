@@ -37,6 +37,12 @@ jobs:
             # Upload coverage info to codecov
             codecov
 
+      - run:
+          name: run linter
+          command: |
+            . venv/bin/activate
+            python3 -m flake8 jupyter_telemetry
+
       - store_test_results:
           path: test-reports
       - store_artifacts:

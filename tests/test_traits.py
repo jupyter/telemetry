@@ -1,6 +1,8 @@
+import logging
+
 import pytest
-import logging 
 from traitlets import HasTraits, TraitError
+
 from jupyter_telemetry.traits import Handlers
 
 
@@ -13,7 +15,7 @@ class HasHandlers(HasTraits):
 
 def test_good_handlers_value():
     handlers = [
-        logging.NullHandler(), 
+        logging.NullHandler(),
         logging.NullHandler()
     ]
     obj = HasHandlers(
@@ -21,20 +23,22 @@ def test_good_handlers_value():
     )
     assert obj.handlers == handlers
 
+
 def test_bad_handlers_values():
     handlers = [0, 1]
-    
+
     with pytest.raises(TraitError):
-        obj = HasHandlers(
+        HasHandlers(
             handlers=handlers
         )
 
+
 def test_mixed_handlers_values():
     handlers = [
-        logging.NullHandler(), 
+        logging.NullHandler(),
         1
     ]
     with pytest.raises(TraitError):
-        obj = HasHandlers(
+        HasHandlers(
             handlers=handlers
         )
