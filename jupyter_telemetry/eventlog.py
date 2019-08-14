@@ -126,59 +126,67 @@ class EventLog(Configurable):
 
         self.schemas[(schema['$id'], schema['version'])] = schema
 
-    def register_events(self, events):
+    def register_event_model(self, events):
         """Register schemas from pydantic Model objects.
 
         events : list of pydantic Model objects.
         """
         for event in events:
-            print(event)
             if not issubclass(event, pydantic.BaseModel):
                 raise TypeError("event must be a subclass of pydantic.BaseModel.")
             self.register_schema(event.schema())
 
-    def record_event(self, event):
+    def record_event_model(self, event):
+        """Record given event with schema has occurred.
+
+        event: pydantic BaseModel.
         """
-        Record given event with schema has occurred.
+        if not issubclass(event.__class__, pydantic.BaseModel):
+            raise TypeError('Must be a subclass of pydantic.BaseModel.')
+        
+        # Get extra args from pydantics's Config inner class.
+        version = event.Config.schema_extra['version']
+        schema_id = event.Config.schema_extra['$id']
+        # Get Event data as dict (ugly hack)
+        capsule = json.loads(event.json())
 
-        event: dict or pydantic object.
-            If dict, validates the 
-        """
-        # Validate if event is raw JSON
-        validate = True
-
-        # If event is a pydantic object, it will alreaby be validated.
-        if issubclass(event.__class__, pydantic.BaseModel):
-            # Get extra args from schema
-            version = event.Config.schema_extra['version']
-            schema_name = event.Config.schema_extra['$id']
-            # Get Event data as dict (ugly hack)
-            capsule = json.loads(event.json())
-            validate = False
-        else:
-            version = event.pop('version')
-            schema_name = event.pop('$id')
-            capsule = event
-
-        if not (self.handlers and schema_name in self.allowed_schemas):
+        if not (self.handlers and schema_id in self.allowed_schemas):
             # if handler isn't set up or schema is not explicitly whitelisted,
             # don't do anything
             return
 
-        if (schema_name, version) not in self.schemas:
-            raise ValueError('Schema {schema_name} version {version} not registered'.format(
-                schema_name=schema_name, version=version
+        if (schema_id, version) not in self.schemas:
+            raise ValueError('Schema {schema_id} version {version} not registered'.format(
+                schema_id=schema_id, version=version
             ))
-        schema = self.schemas[(schema_name, version)]
-        
-        # Validate raw JSON with jsonschema.
-        if validate:
-            jsonschema.validate(event, schema)
-            capsule = event
 
         capsule.update({
             '__timestamp__': datetime.utcnow().isoformat() + 'Z',
-            '__schema__': schema_name,
+            '__schema__': schema_id,
             '__version__': version
         })
+        self.log.info(capsule)
+
+    def record_event(self, schema_id, version, event):
+        """
+        Record given event with schema has occurred.
+        """
+        if not (self.handlers and schema_id in self.allowed_schemas):
+            # if handler isn't set up or schema is not explicitly whitelisted,
+            # don't do anything
+            return
+
+        if (schema_id, version) not in self.schemas:
+            raise ValueError('Schema {schema_id} version {version} not registered'.format(
+                schema_id=schema_id, version=version
+            ))
+        schema = self.schemas[(schema_id, version)]
+        jsonschema.validate(event, schema)
+
+        capsule = {
+            '__timestamp__': datetime.utcnow().isoformat() + 'Z',
+            '__schema__': schema_id,
+            '__version__': version
+        }
+        capsule.update(event)
         self.log.info(capsule)
