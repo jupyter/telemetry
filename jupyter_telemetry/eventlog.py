@@ -126,15 +126,14 @@ class EventLog(Configurable):
 
         self.schemas[(schema['$id'], schema['version'])] = schema
 
-    def register_event_model(self, events):
+    def register_event_model(self, event):
         """Register schemas from pydantic Model objects.
 
         events : list of pydantic Model objects.
         """
-        for event in events:
-            if not issubclass(event, pydantic.BaseModel):
-                raise TypeError("event must be a subclass of pydantic.BaseModel.")
-            self.register_schema(event.schema())
+        if not issubclass(event, pydantic.BaseModel):
+            raise TypeError("event must be a subclass of pydantic.BaseModel.")
+        self.register_schema(event.schema())
 
     def record_event_model(self, event):
         """Record given event with schema has occurred.
