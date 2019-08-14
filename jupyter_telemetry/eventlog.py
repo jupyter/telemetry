@@ -6,12 +6,15 @@ import logging
 from datetime import datetime
 
 import jsonschema
+import pydantic
+
 from pythonjsonlogger import jsonlogger
 from ruamel.yaml import YAML
 from traitlets import List
 from traitlets.config import Configurable, Config
 
 from .traits import Handlers
+
 
 yaml = YAML(typ='safe')
 
@@ -123,10 +126,40 @@ class EventLog(Configurable):
 
         self.schemas[(schema['$id'], schema['version'])] = schema
 
-    def record_event(self, schema_name, version, event):
+    def register_events(self, events):
+        """Register schemas from pydantic Model objects.
+
+        events : list of pydantic Model objects.
+        """
+        for event in events:
+            print(event)
+            if not issubclass(event, pydantic.BaseModel):
+                raise TypeError("event must be a subclass of pydantic.BaseModel.")
+            self.register_schema(event.schema())
+
+    def record_event(self, event):
         """
         Record given event with schema has occurred.
+
+        event: dict or pydantic object.
+            If dict, validates the 
         """
+        # Validate if event is raw JSON
+        validate = True
+
+        # If event is a pydantic object, it will alreaby be validated.
+        if issubclass(event.__class__, pydantic.BaseModel):
+            # Get extra args from schema
+            version = event.Config.schema_extra['version']
+            schema_name = event.Config.schema_extra['$id']
+            # Get Event data as dict (ugly hack)
+            capsule = json.loads(event.json())
+            validate = False
+        else:
+            version = event.pop('version')
+            schema_name = event.pop('$id')
+            capsule = event
+
         if not (self.handlers and schema_name in self.allowed_schemas):
             # if handler isn't set up or schema is not explicitly whitelisted,
             # don't do anything
@@ -137,12 +170,15 @@ class EventLog(Configurable):
                 schema_name=schema_name, version=version
             ))
         schema = self.schemas[(schema_name, version)]
-        jsonschema.validate(event, schema)
+        
+        # Validate raw JSON with jsonschema.
+        if validate:
+            jsonschema.validate(event, schema)
+            capsule = event
 
-        capsule = {
+        capsule.update({
             '__timestamp__': datetime.utcnow().isoformat() + 'Z',
             '__schema__': schema_name,
             '__version__': version
-        }
-        capsule.update(event)
+        })
         self.log.info(capsule)
