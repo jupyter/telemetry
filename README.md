@@ -5,9 +5,17 @@
 
 Telemetry for Jupyter Applications and extensions.
 
+
+## Install
+
+Jupyter's Telemetry library can be installed from PyPI.
+```
+pip install jupyter_telemetry
+```
+
 ## Basic Usage
 
-Telemetry provides a configurable traitlets object, `EventLog`, for structured event-logging in Python. It leverages Python's standard `logging` library for filtering, handling, and recording events. All events are validated (using [jsonschema](https://pypi.org/project/jsonschema/)) againsted registered [JSON schemas](https://json-schema.org/). 
+Telemetry provides a configurable traitlets object, `EventLog`, for structured event-logging in Python. It leverages Python's standard `logging` library for filtering, handling, and recording events. All events are validated (using [jsonschema](https://pypi.org/project/jsonschema/)) against registered [JSON schemas](https://json-schema.org/). 
 
 Let's look at a basic example of an `EventLog`.
 ```python
@@ -35,19 +43,19 @@ EventLog has two configurable traits:
 Event schemas must be registered with the `EventLog` for events to be recorded. An event schema looks something like:
 ```json
 {
-  '$id': 'url.to.event.schema',
-  'title': 'My Event',
-  'description': 'All events must have a name property.',
-  'type': 'object',
-  'properties': {
-    'name': {
-      'title': 'Name',
-      'description': 'Name of event',
-      'type': 'string'
+  "$id": "url.to.event.schema",
+  "title": "My Event",
+  "description": "All events must have a name property.",
+  "type": "object",
+  "properties": {
+    "name": {
+      "title": "Name",
+      "description": "Name of event",
+      "type": "string"
     }
   },
-  'required': ['name'],
-  'version': 1
+  "required": ["name"],
+  "version": 1
 }
 ```
 2 fields are required:
@@ -71,12 +79,4 @@ eventlog.record_event(
     version=1,
     event=event
 )
-```
-
-
-## Install
-
-Jupyter's Telemetry library can be installed from PyPI.
-```
-pip install jupyter_telemetry
 ```
