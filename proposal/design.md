@@ -159,6 +159,9 @@ inspiration from.
        retention. See some [sample code](https://www.mediawiki.org/wiki/Extension:EventLogging/Guide#Underlying_technology)
        to get a feel for how it is.
 
+   Thanks to Ori Livneh, one of the designers of this system, for conversations that
+   have influenced how the Jupyter Telemetry system is being designed.
+
 * Mozilla's Telemetry system
 
   Firefox runs on a lot of browsers, and has a lot of very privacy conscious
