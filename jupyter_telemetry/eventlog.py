@@ -29,6 +29,7 @@ from traitlets.config import Configurable, Config
 
 from .traits import Handlers
 from . import TELEMETRY_METADATA_VERSION
+from .formatter import JsonEventFormatter
 
 yaml = YAML(typ='safe')
 
@@ -80,14 +81,24 @@ class EventLog(Configurable):
         self.log.propagate = False
         # We will use log.info to emit
         self.log.setLevel(logging.INFO)
+        self.schemas = {}
 
         if self.handlers:
-            formatter = jsonlogger.JsonFormatter(json_serializer=_skip_message)
             for handler in self.handlers:
+                # If include_pii is not an attribute of handler, patch in.
+                if not hasattr(handler, 'include_pii'):
+                    # Default to False.
+                    setattr(handler, 'include_pii', False)
+                # Create a formatter for this handler.
+                formatter = JsonEventFormatter(
+                    logger=self,
+                    handler=handler,
+                    json_serializer=_skip_message
+                )
+                # Set formatted for handler.
                 handler.setFormatter(formatter)
                 self.log.addHandler(handler)
 
-        self.schemas = {}
 
     def _load_config(self, cfg, section_names=None, traits=None):
         """Load EventLog traits from a Config object, patching the
