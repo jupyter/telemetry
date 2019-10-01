@@ -69,10 +69,10 @@ class EventLog(Configurable):
 
         if self.handlers:
             for handler in self.handlers:
-                # If include_pii is not an attribute of handler, patch in.
-                if not hasattr(handler, 'include_pii'):
-                    # Default to False.
-                    setattr(handler, 'include_pii', False)
+                # If event_log is not an attribute of handler, patch in.
+                if not hasattr(handler, 'event_level'):
+                    # Default to unclassified.
+                    setattr(handler, 'event_level', 'unclassified')
                 # Create a formatter for this handler.
                 formatter = JsonEventFormatter(
                     logger=self,
