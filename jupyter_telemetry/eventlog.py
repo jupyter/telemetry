@@ -6,7 +6,6 @@ import logging
 from datetime import datetime
 
 import jsonschema
-from pythonjsonlogger import jsonlogger
 try:
     from ruamel.yaml import YAML
 except ImportError as e:
@@ -99,11 +98,9 @@ class EventLog(Configurable):
                 handler.setFormatter(formatter)
                 self.log.addHandler(handler)
 
-
     def _load_config(self, cfg, section_names=None, traits=None):
         """Load EventLog traits from a Config object, patching the
         handlers trait in the Config object to avoid deepcopy errors.
-
         """
         my_cfg = self._find_my_config(cfg)
         handlers = my_cfg.pop("handlers", [])
