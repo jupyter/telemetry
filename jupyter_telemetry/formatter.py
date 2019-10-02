@@ -28,9 +28,9 @@ class JsonEventFormatter(jsonlogger.JsonFormatter):
 
         # Set the event logging level
         if hasattr(self.handler, 'event_level'):
-            event_level = self.handler.event_level 
+            event_level = self.handler.event_level
         else:
-            event_level = 'unclassified' 
+            event_level = 'unclassified'
         self.setEventLevel(event_level)
 
         super(JsonEventFormatter, self).__init__(*args, **kwargs)
@@ -50,14 +50,13 @@ class JsonEventFormatter(jsonlogger.JsonFormatter):
     def process_log_record(self, log_record):
         log_record = super(JsonEventFormatter, self).process_log_record(log_record)
         return self.process_event_levels(log_record)
-        
+
     def process_event_levels(self, log_record):
         """Removes any properties in a log_record that have an attribute `pii = True`.
         """
         # Get schema for this log_record
         key = (log_record['__schema__'], log_record['__version__'])
         schema = self.logger.schemas[key]['properties']
-    
         # Logging keys that won't be in the schema.
         ignored_keys = ['__schema__', '__timestamp__', '__version__', 'message']
 
@@ -67,8 +66,8 @@ class JsonEventFormatter(jsonlogger.JsonFormatter):
             if key not in ignored_keys:
                 # Check if PII is listed in the schema.
                 if EVENT_MAP[schema[key]['level']] > EVENT_MAP[self.event_level]:
-                    # If property's level is less than handler's level, 
+                    # If property's level is less than handler's level,
                     # delete this property from the log record.
                     del log_record[key]
-        
+
         return log_record
