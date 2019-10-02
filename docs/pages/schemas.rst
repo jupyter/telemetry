@@ -16,7 +16,14 @@ At a minimum, valid schemas should have the following keys:
 
     + ``title`` : name of the property
     + ``description``: documentation for this property.
-    + ``pii``: (optional) boolean for whether this property is personally identifiable information or not.
+    + ``level``: the level of sensitivity of this property.
+
+        Jupyter Telemetry provides four levels of sensitivity. The list of sensitivity level in increasing order:
+        
+        + ``'unclassified'``
+        + ``'confidential'`` 
+        + ``'secret'``
+        + ``'top_secret'``
 
 - ``required``: list of required properties.
 
@@ -33,6 +40,7 @@ Here is a minimal example of a valid JSON schema for an event.
     properties:
       name:
         title: Name
+        level: confidential
         description: |
             Name of event
         type: string
