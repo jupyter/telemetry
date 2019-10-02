@@ -55,7 +55,8 @@ def test_reserved_properties():
             'version': 1,
             'properties': {
                 '__fail__': {
-                    'type': 'string'
+                    'type': 'string',
+                    'level': 'unclassified'
                 },
             },
         })
@@ -100,7 +101,8 @@ def test_record_event():
         'version': 1,
         'properties': {
             'something': {
-                'type': 'string'
+                'type': 'string',
+                'level': 'unclassified'
             },
         },
     }
@@ -138,7 +140,8 @@ def test_register_schema_file():
         'version': 1,
         'properties': {
             'something': {
-                'type': 'string'
+                'type': 'string',
+                'level': 'unclassified'
             },
         },
     }
@@ -166,7 +169,8 @@ def test_allowed_schemas():
         'version': 1,
         'properties': {
             'something': {
-                'type': 'string'
+                'type': 'string',
+                'level': 'unclassified'
             },
         },
     }
@@ -194,10 +198,12 @@ def test_record_event_badschema():
         'version': 1,
         'properties': {
             'something': {
-                'type': 'string'
+                'type': 'string',
+                'level': 'unclassified'
             },
             'status': {
-                'enum': ['success', 'failure']
+                'enum': ['success', 'failure'],
+                'level': 'unclassified'
             }
         }
     }
