@@ -99,7 +99,7 @@ Schemas can be registered from a Python dict object, a file, or a URL. This exam
    :caption: Table of Contents:
 
    pages/schemas.rst
-   pages/pii.rst
+
 
 Indices and tables
 ------------------
