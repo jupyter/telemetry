@@ -2,6 +2,7 @@
 
 [![CircleCI](https://circleci.com/gh/jupyter/telemetry.svg?style=svg)](https://circleci.com/gh/jupyter/telemetry) 
 [![codecov](https://codecov.io/gh/jupyter/telemetry/branch/master/graph/badge.svg)](https://codecov.io/gh/jupyter/telemetry)
+[![Documentation Status](https://readthedocs.org/projects/jupyter-telemetry/badge/?version=latest)](https://jupyter-telemetry.readthedocs.io/en/latest/?badge=latest)
 
 Telemetry for Jupyter Applications and extensions.
 
