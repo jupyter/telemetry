@@ -139,10 +139,14 @@ class EventLog(Configurable):
         schema = self.schemas[(schema_name, version)]
         jsonschema.validate(event, schema)
 
+        # Incremented every time we change the capsule itself
+        telemetry_version = 1
+
         capsule = {
             '__timestamp__': datetime.utcnow().isoformat() + 'Z',
             '__schema__': schema_name,
-            '__version__': version
+            '__schema_version__': version,
+            '__telemetry_version__': telemetry_version
         }
         capsule.update(event)
         self.log.info(capsule)
