@@ -93,7 +93,7 @@ def test_record_event():
     assert event_capsule == {
         '__schema__': 'test/test',
         '__schema_version__': 1,
-        '__telemetry_version__': 1,
+        '__metadata_version__': 1,
         'something': 'blah'
     }
 
