@@ -12,6 +12,7 @@ from traitlets import List
 from traitlets.config import Configurable, Config
 
 from .traits import Handlers
+from . import TELEMETRY_METADATA_VERSION
 
 yaml = YAML(typ='safe')
 
@@ -142,7 +143,8 @@ class EventLog(Configurable):
         capsule = {
             '__timestamp__': datetime.utcnow().isoformat() + 'Z',
             '__schema__': schema_name,
-            '__version__': version
+            '__schema_version__': version,
+            '__metadata_version__': TELEMETRY_METADATA_VERSION
         }
         capsule.update(event)
         self.log.info(capsule)

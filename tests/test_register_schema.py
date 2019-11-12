@@ -92,7 +92,8 @@ def test_record_event():
     del event_capsule['__timestamp__']
     assert event_capsule == {
         '__schema__': 'test/test',
-        '__version__': 1,
+        '__schema_version__': 1,
+        '__metadata_version__': 1,
         'something': 'blah'
     }
 
