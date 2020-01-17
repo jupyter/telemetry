@@ -1,0 +1,7 @@
+include LICENSE
+include *.md
+include *requirements.txt
+include package.json
+
+graft tests
+graft src
