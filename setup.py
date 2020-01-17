@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='jupyter_telemetry',
-    version='0.0.3',
+    version='0.0.4',
     description='Jupyter telemetry library',
     packages=find_packages(),
     author          = 'Jupyter Development Team',
