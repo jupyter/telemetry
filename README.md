@@ -1,11 +1,14 @@
 # Telemetry
 
-[![CircleCI](https://circleci.com/gh/jupyter/telemetry.svg?style=svg)](https://circleci.com/gh/jupyter/telemetry) 
+[![CircleCI](https://circleci.com/gh/jupyter/telemetry.svg?style=svg)](https://circleci.com/gh/jupyter/telemetry)
 [![codecov](https://codecov.io/gh/jupyter/telemetry/branch/master/graph/badge.svg)](https://codecov.io/gh/jupyter/telemetry)
 [![Documentation Status](https://readthedocs.org/projects/jupyter-telemetry/badge/?version=latest)](https://jupyter-telemetry.readthedocs.io/en/latest/?badge=latest)
 
 Telemetry for Jupyter Applications and extensions.
 
+> Telemetry (təˈlemətrē): the process of recording and transmitting the readings of an instrument. [Oxford Dictionaries]
+
+Jupyter Telemetry enables Jupyter Applications (e.g. Jupyter Server, Jupyter Notebook, JupyterLab, JupyterHub, etc.) to record **events**—i.e. actions by users—and transmit them to remote (or local) logs as **structured** data. It leverages Python's standard `logging` library to handle the transmission of events to different locations.
 
 ## Install
 
@@ -16,7 +19,7 @@ pip install jupyter_telemetry
 
 ## Basic Usage
 
-Telemetry provides a configurable traitlets object, `EventLog`, for structured event-logging in Python. It leverages Python's standard `logging` library for filtering, handling, and recording events. All events are validated (using [jsonschema](https://pypi.org/project/jsonschema/)) against registered [JSON schemas](https://json-schema.org/). 
+Telemetry provides a configurable traitlets object, `EventLog`, for structured event-logging in Python. It leverages Python's standard `logging` library for filtering, handling, and recording events. All events are validated (using [jsonschema](https://pypi.org/project/jsonschema/)) against registered [JSON schemas](https://json-schema.org/).
 
 Let's look at a basic example of an `EventLog`.
 ```python
