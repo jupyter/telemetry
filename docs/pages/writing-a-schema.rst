@@ -2,7 +2,7 @@ Writing a Schema
 ================
 
 
-Schemas should follow valid `JSON schema`_. These schemas can be written in valid YAML or JSON. 
+Schemas should follow valid `JSON schema`_. These schemas can be written in valid YAML or JSON.
 
 At a minimum, valid schemas should have the following keys:
 

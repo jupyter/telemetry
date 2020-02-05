@@ -27,6 +27,7 @@ setup(
         'jsonschema',
         'python-json-logger',
         'traitlets',
-        'ruamel.yaml'
+        'ruamel.yaml',
+        'sphinx-jsonschema'
     ],
 )

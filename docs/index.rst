@@ -11,7 +11,7 @@ Jupyter Telemetry
 
 Telemetry provides a configurable traitlets object, EventLog, for structured event-logging in Python. It leverages Python's standard logging library for filtering, handling, and recording events. All events are validated (using jsonschema) against registered JSON schemas.
 
-If you're looking for telemetry in Jupyter frontend applications (like JupyterLab), checkout the work happening in jupyterlab-telemetry_! 
+If you're looking for telemetry in Jupyter frontend applications (like JupyterLab), checkout the work happening in jupyterlab-telemetry_!
 
 .. _jupyterlab-telemetry: https://github.com/jupyterlab/jupyterlab-telemetry
 
@@ -98,8 +98,8 @@ Schemas can be registered from a Python dict object, a file, or a URL. This exam
    :maxdepth: 2
    :caption: Table of Contents:
 
-   pages/schemas.rst
-
+   pages/writing-a-schema
+   pages/sphinxext
 
 Indices and tables
 ------------------
