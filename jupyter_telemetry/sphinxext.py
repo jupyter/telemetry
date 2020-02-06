@@ -10,6 +10,7 @@ JsonSchema = __import__('sphinx-jsonschema').JsonSchema
 
 yaml = YAML(typ='safe')
 
+
 # Use the JsonSchema directive from sphinx-jsonschema,
 # But replace the directive name so that we don't
 # require this users to list both the 'jupyter_telemetry_schema'
