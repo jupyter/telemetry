@@ -8,7 +8,7 @@
 
 > Telemetry (təˈlemətrē): the process of recording and transmitting the readings of an instrument. [Oxford Dictionaries]
 
-Jupyter Telemetry enables Jupyter Applications (e.g. Jupyter Server, Jupyter Notebook, JupyterLab, JupyterHub, etc.) to record **events**—i.e. actions by application users—and transmit them to remote (or local) logs as **structured** data. It works with Python's standard `logging` library to handle the transmission of events allowing users to send events to local files, over the web, etc.
+Jupyter Telemetry enables Jupyter Applications (e.g. Jupyter Server, Jupyter Notebook, JupyterLab, JupyterHub, etc.) to record **events**—i.e. actions by application users—and transmit them to remote (or local) destinations as **structured** data. It works with Python's standard `logging` library to handle the transmission of events allowing users to send events to local files, over the web, etc.
 
 ## Install
 
