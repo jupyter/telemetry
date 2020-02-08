@@ -2,7 +2,7 @@ Writing a Schema
 ================
 
 
-Schemas should follow valid `JSON schema`_. These schemas can be written in valid YAML or JSON. 
+Schemas should follow valid `JSON schema`_. These schemas can be written in valid YAML or JSON.
 
 At a minimum, valid schemas should have the following keys:
 
@@ -18,12 +18,11 @@ At a minimum, valid schemas should have the following keys:
     + ``description``: documentation for this property.
     + ``level``: the level of sensitivity of this property.
 
-        Jupyter Telemetry provides four levels of sensitivity. The list of sensitivity level in increasing order:
-        
-        + ``'unclassified'``
-        + ``'confidential'`` 
-        + ``'secret'``
-        + ``'top_secret'``
+        Jupyter Telemetry provides three levels of sensitivity. The list of sensitivity level in increasing order:
+
+        + ``'unrestricted'``
+        + ``'user-identifier'``
+        + ``'user-identifiable-information'``
 
 - ``required``: list of required properties.
 
@@ -40,12 +39,15 @@ Here is a minimal example of a valid JSON schema for an event.
     properties:
       name:
         title: Name
-        level: confidential
-        description: |
-            Name of event
-        type: string
+        level: unrestricted
+        description: Name of event
+      user:
+        title: User name
+        level: user-identifier
+        description: Name of user who initiated event
     required:
     - name
+    - user
 
 
 .. _JSON schema: https://json-schema.org/

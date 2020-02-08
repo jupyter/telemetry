@@ -1,30 +1,35 @@
 Logging sensitive data
 ======================
 
-Jupyter Telemetry offers flexibility when logging and handling sensitive data. 
+Jupyter Telemetry requires that all fields in an event schema explicitly state when personally-identifiable information is being collected. Each property in an event schema must have a ``sensitivity_level`` attribute.
 
-Since events may include data with varying degrees of sensitivity, Jupyter Telemetry uses a multi-level security approach. It exposed four levels of sensitivity:
+Since events may include data with varying degrees of sensitivity, Jupyter Telemetry uses a multi-level security approach. It exposed three levels of sensitivity:
 
-    + ``'unclassified'``
-    + ``'confidential'``
-    + ``'secret'``
-    + ``'top_secret'``
+    + ``'unrestricted'``
+    + ``'personal-identifier'``
+    + ``'personally-identifiable-information'``
 
-Each event property can be given one of these four levels. This is reflected in the event JSON schema using the ``level`` attribute (if this property is missing from the schema, an error will be thrown):
+Each event property can be given one of these three levels:
 
 .. code-block:: yaml
 
     $id: example.schema
     ...
+    sensitivity_level:
     properties:
       name:
         title: Name
-        level: confidential
-        description: |
-            Name of event
+        sensitivity_level: unrestricted
+        description: Name of event
         type: string
+      user:
+        title: User name
+        sensitivity_level: personal-identifier
+        description: Name of the user who initiated the event.
+      affiliation:
+        title: I
 
-Jupyter Telemetry uses the ``level`` attribute to drop sensitive data when emitting events. By default, properties greater than "unclassifed" are dropped from recorded event data.
+Jupyter Telemetry uses ``sensitivity_level`` to drop sensitive data when emitting events. By default, properties greater than "unclassifed" are dropped from recorded event data.
 
 Each logging handler increase the level of sensitive data it emots. This can be configured by changing its ``.event_level`` attribute.
 
