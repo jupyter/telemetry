@@ -124,7 +124,7 @@ class EventLog(Configurable):
 
         self.schemas[(schema['$id'], schema['version'])] = schema
 
-    def record_event(self, schema_name, version, event):
+    def record_event(self, schema_name, version, event, timestamp_override=None):
         """
         Record given event with schema has occurred.
         """
@@ -140,8 +140,12 @@ class EventLog(Configurable):
         schema = self.schemas[(schema_name, version)]
         jsonschema.validate(event, schema)
 
+        if timestamp_override is None:
+            timestamp = datetime.utcnow()
+        else:
+            timestamp = timestamp_override
         capsule = {
-            '__timestamp__': datetime.utcnow().isoformat() + 'Z',
+            '__timestamp__': timestamp.isoformat() + 'Z',
             '__schema__': schema_name,
             '__schema_version__': version,
             '__metadata_version__': TELEMETRY_METADATA_VERSION
