@@ -4,6 +4,7 @@ import logging
 import tempfile
 
 import jsonschema
+from datetime import datetime, timedelta
 import pytest
 from ruamel.yaml import YAML
 
@@ -59,6 +60,36 @@ def test_reserved_properties():
             },
         })
 
+
+def test_timestamp_override():
+    """
+    Simple test for overriding timestamp
+    """
+    schema = {
+        '$id': 'test/test',
+        'version': 1,
+        'properties': {
+            'something': {
+                'type': 'string'
+            },
+        },
+    }
+
+    output = io.StringIO()
+    handler = logging.StreamHandler(output)
+    el = EventLog(handlers=[handler])
+    el.register_schema(schema)
+    el.allowed_schemas = ['test/test']
+
+    timestamp_override = datetime.utcnow() - timedelta(days=1)
+    el.record_event('test/test', 1, {
+        'something': 'blah',
+    }, timestamp_override=timestamp_override)
+    handler.flush()
+
+    event_capsule = json.loads(output.getvalue())
+
+    assert event_capsule['__timestamp__'] == timestamp_override.isoformat() + 'Z'
 
 def test_record_event():
     """
