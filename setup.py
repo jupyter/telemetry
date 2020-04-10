@@ -14,11 +14,15 @@ version_ns = {}
 with io.open(path, encoding="utf8") as f:
     exec(f.read(), {}, version_ns)
 
+with open(pjoin(HERE, 'README.md')) as fid:
+    long_description = fid.read()
 
 setup(
     name=name,
     version=version_ns["__version__"],
     description='Jupyter telemetry library',
+    long_description=long_description,
+    long_description_content_type='text/markdown',
     packages=find_packages(),
     author          = 'Jupyter Development Team',
     author_email    = 'jupyter@googlegroups.com',
