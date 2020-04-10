@@ -211,3 +211,71 @@ def test_record_event_badschema():
             'something': 'blah',
             'status': 'not-in-enum'
         })
+
+
+def test_unique_logger_instances():
+    schema0 = {
+        '$id': 'test/test0',
+        'version': 1,
+        'properties': {
+            'something': {
+                'type': 'string'
+            },
+        },
+    }
+
+    schema1= {
+        '$id': 'test/test1',
+        'version': 1,
+        'properties': {
+            'something': {
+                'type': 'string'
+            },
+        },
+    }
+
+    output0 = io.StringIO()
+    output1 = io.StringIO()
+    handler0 = logging.StreamHandler(output0)
+    handler1 = logging.StreamHandler(output1)
+
+    el0 = EventLog(handlers=[handler0])
+    el0.register_schema(schema0)
+    el0.allowed_schemas = ['test/test0']
+
+    el1 = EventLog(handlers=[handler1])
+    el1.register_schema(schema1)
+    el1.allowed_schemas = ['test/test1']
+
+    el0.record_event('test/test0', 1, {
+        'something': 'blah',
+    })
+    el1.record_event('test/test1', 1, {
+        'something': 'blah',
+    })
+    handler0.flush()
+    handler1.flush()
+
+    event_capsule0 = json.loads(output0.getvalue())
+
+    assert '__timestamp__' in event_capsule0
+    # Remove timestamp from capsule when checking equality, since it is gonna vary
+    del event_capsule0['__timestamp__']
+    assert event_capsule0 == {
+        '__schema__': 'test/test0',
+        '__schema_version__': 1,
+        '__metadata_version__': 1,
+        'something': 'blah'
+    }
+
+    event_capsule1 = json.loads(output1.getvalue())
+
+    assert '__timestamp__' in event_capsule1
+    # Remove timestamp from capsule when checking equality, since it is gonna vary
+    del event_capsule1['__timestamp__']
+    assert event_capsule1 == {
+        '__schema__': 'test/test1',
+        '__schema_version__': 1,
+        '__metadata_version__': 1,
+        'something': 'blah'
+    }
