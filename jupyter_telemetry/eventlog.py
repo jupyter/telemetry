@@ -56,7 +56,10 @@ class EventLog(Configurable):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.log = logging.getLogger(__name__)
+        # Use a unique name for the logger so that multiple instances of EventLog do not write
+        # to each other's handlers.
+        log_name = __name__ + '.' + str(id(self))
+        self.log = logging.getLogger(log_name)
         # We don't want events to show up in the default logs
         self.log.propagate = False
         # We will use log.info to emit
