@@ -1,11 +1,23 @@
 """
 Setup module for the jupyterlab-telemetry
 """
+import io
+import os.path as osp
 from setuptools import setup, find_packages
 
+HERE = osp.dirname(osp.realpath(__file__))
+
+name = "jupyter_telemetry"
+
+path = osp.realpath("{0}/{1}/_version.py".format(HERE, name))
+version_ns = {}
+with io.open(path, encoding="utf8") as f:
+    exec(f.read(), {}, version_ns)
+
+
 setup(
-    name='jupyter_telemetry',
-    version='0.0.5',
+    name=name,
+    version=version_ns["__version__"],
     description='Jupyter telemetry library',
     packages=find_packages(),
     author          = 'Jupyter Development Team',
