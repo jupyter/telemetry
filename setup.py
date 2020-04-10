@@ -14,7 +14,7 @@ version_ns = {}
 with io.open(path, encoding="utf8") as f:
     exec(f.read(), {}, version_ns)
 
-with open(pjoin(HERE, 'README.md')) as fid:
+with open(osp.join(HERE, 'README.md')) as fid:
     long_description = fid.read()
 
 setup(
