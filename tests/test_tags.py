@@ -24,39 +24,39 @@ def schema(schema_id, version):
         'description': 'Test Event.',
         'type': 'object',
         'properties': {
+            'nothing-exciting': {
+                'description': 'a property with nothing exciting happening',
+                'tag': 'unrestricted',
+                'type': 'string'
+            },
             'id': {
-                'description': 'user ID', 
-                'level': 'confidential',
+                'description': 'user ID',
+                'tag': 'user-identifier',
                 'type': 'string'
             },
             'email': {
                 'description': 'email address',
-                'level': 'secret',
+                'tag': 'user-identifiable-information',
                 'type': 'string'
             },
-            'name': { 
-                'description': 'name of user',
-                'level': 'top_secret',
-                'type': 'string'
-            }
         }
     }
 
 
 @pytest.mark.parametrize(
-    'level,expected_props',
+    'tags,expected_props',
     [
-        ('unclassified', set()),
-        ('confidential', {'id'}),
-        ('secret', {'id', 'email'}),
-        ('top_secret', {'id', 'email', 'name'})
+        ({'unrestricted'}, {'nothing-exciting'}),
+        ({'user-identifier'}, {'nothing-exciting', 'id'}),
+        ({'user-identifiable-information'}, {'nothing-exciting', 'email'})
     ]
 )
-def test_drop_sensitive_properties(schema, schema_id, version, level, expected_props):
+def test_properties_tags(schema, schema_id, version, tags, expected_props):
     sink = io.StringIO()
+
+    # Create a handler that captures+records events with allowed tags.
     handler = logging.StreamHandler(sink)
-    # Set the event level
-    handler.event_level = level
+    handler.allowed_tags = tags
 
     e = EventLog(
         handlers=[handler],
@@ -65,19 +65,15 @@ def test_drop_sensitive_properties(schema, schema_id, version, level, expected_p
     e.register_schema(schema)
 
     event = {
+        'nothing-exciting': 'hello, world',
         'id': 'test id',
         'email': 'test@testemail.com',
-        'name': 'test name'
     }
-
-    # Get a set of keys that should be missing
-    dropped_props = set(event.keys()) - expected_props
 
     # Record event and read output
     e.record_event(schema_id, version, event)
     recorded_event = json.loads(sink.getvalue())
-    recorded_props = set(recorded_event.keys())
+    recorded_props = set([key for key in recorded_event if not key.startswith('__')])
 
-    # Assert that sensitive properties are dropped.
-    assert len(dropped_props.intersection(recorded_props)) == 0
-    
+    assert expected_props == recorded_props
+

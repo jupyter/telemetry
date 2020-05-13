@@ -116,16 +116,12 @@ class EventLog(Configurable):
         jsonschema.validators.validator_for(schema).check_schema(schema)
 
         # Check that the properties we require are present
-        required_schema_fields = {'$id', 'version'}
+        required_schema_fields = {'$id', 'version', 'properties'}
         for rsf in required_schema_fields:
             if rsf not in schema:
                 raise ValueError(
                     '{} is required in schema specification'.format(rsf)
                 )
-
-        # Verify that all properties have a sensitivity level.
-        if
-
 
         # Make sure reserved, auto-added fields are not in schema
         if any([p.startswith('__') for p in schema['properties']]):
