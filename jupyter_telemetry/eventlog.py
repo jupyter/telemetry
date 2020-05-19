@@ -25,9 +25,7 @@ except ImportError as e:
 
 from traitlets import (
     List,
-    Set,
     Unicode,
-    Callable,
     Bool
 )
 from traitlets.config import Configurable, Config
