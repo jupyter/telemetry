@@ -1,7 +1,6 @@
 """
 Emit structured, discrete events when various actions happen.
 """
-import json
 import logging
 from datetime import datetime
 
@@ -9,7 +8,6 @@ import jsonschema
 from ruamel.yaml import YAML
 from traitlets import (
     List,
-    Unicode,
     Bool
 )
 from traitlets.config import Configurable, Config
@@ -58,7 +56,6 @@ class EventLog(Configurable):
         List of property categories to allow in all recorded events.
         """
     ).tag(config=True)
-
 
     def __init__(self, *args, **kwargs):
         # We need to initialize the configurable before
