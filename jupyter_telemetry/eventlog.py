@@ -102,7 +102,7 @@ class EventLog(Configurable):
         """
         allowed_categories = getattr(
             handler,
-            "hashed_categories",
+            "allowed_categories",
             self.allowed_categories
         )
 
