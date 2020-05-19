@@ -39,13 +39,28 @@ Further, Jupyter Telemetry also requires that every property within an event has
         category: personally-identifiable-information
         description: Affiliation of the user.
 
+
 Collecting personal data
 ------------------------
 
-As mentioned above, Jupyter telemetry dpes **not** record any personal data by default. Operators must explicitly opt-in to collect personal data by setting the ``EventLog``'s ``collect_personal_data`` attribute to True.
+As mentioned above, Jupyter telemetry does **not** record any personal data by default. Any events with the field ``personal-data: true`` will not be recorded. Operators must explicitly opt-in to collect personal data by setting the ``EventLog``'s ``collect_personal_data`` attribute to ``True``.
 
 .. code-block:: python
 
     from jupyter_telemetry import EventLog
 
     e = EventLog(collect_personal_data=True)
+
+This will enable the EventLog to record events with ``personal-data: true``; however, these events will drop all properties that do not have ``category: unrestricted``. ``unrestricted`` is a reserved category for properties that are **always safe** to collect. Properties labeled with other categories will be removed from the event by default. To record properties with other categories, these categories must be explicitly listed in the ``EventLog.allowed_categories`` attribute.
+
+.. code-block:: python
+
+    from jupyter_telemetry import EventLog
+
+    e = EventLog(
+      collect_personal_data=True,
+      allowed_categories=['personally-identifiable-information']
+    )
+
+
+The ``category`` field is a "free field" for schema authors to define. The only special value is ``unrestricted``. The category field requires all schemas to be explicit about the types of data included an logged event capsule, and it ensures that administrators know exactly what type of data they are collecting.
