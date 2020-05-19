@@ -23,44 +23,72 @@ def schema(schema_id, version):
         'version': version,
         'description': 'Test Event.',
         'type': 'object',
+        'personal-data': True,
         'properties': {
             'nothing-exciting': {
                 'description': 'a property with nothing exciting happening',
-                'tag': 'unrestricted',
+                'category': 'unrestricted',
                 'type': 'string'
             },
             'id': {
                 'description': 'user ID',
-                'tag': 'user-identifier',
+                'category': 'user-identifier',
                 'type': 'string'
             },
             'email': {
                 'description': 'email address',
-                'tag': 'user-identifiable-information',
+                'category': 'user-identifiable-information',
                 'type': 'string'
             },
         }
     }
 
 
-@pytest.mark.parametrize(
-    'tags,expected_props',
-    [
-        ({'unrestricted'}, {'nothing-exciting'}),
-        ({'user-identifier'}, {'nothing-exciting', 'id'}),
-        ({'user-identifiable-information'}, {'nothing-exciting', 'email'})
-    ]
-)
-def test_properties_tags(schema, schema_id, version, tags, expected_props):
+def test_collect_personal_data_false(schema, schema_id, version):
     sink = io.StringIO()
 
     # Create a handler that captures+records events with allowed tags.
     handler = logging.StreamHandler(sink)
-    handler.allowed_tags = tags
 
     e = EventLog(
         handlers=[handler],
-        allowed_schemas=[schema_id]
+        allowed_schemas=[schema_id],
+        collect_personal_data=False,
+    )
+    e.register_schema(schema)
+
+    event = {
+        'nothing-exciting': 'hello, world',
+        'id': 'test id',
+        'email': 'test@testemail.com',
+    }
+
+    # Record event and read output
+    e.record_event(schema_id, version, event)
+    assert sink.getvalue() == ''
+
+
+@pytest.mark.parametrize(
+    'categories,expected_props',
+    [
+        ([], {'nothing-exciting'}),
+        (['unrestricted'], {'nothing-exciting'}),
+        (['user-identifier'], {'nothing-exciting', 'id'}),
+        (['user-identifiable-information'], {'nothing-exciting', 'email'}),
+        (['user-identifier', 'user-identifiable-information'], {'nothing-exciting', 'email', 'id'})
+    ]
+)
+def test_category_filtering(schema, schema_id, version, categories, expected_props):
+    sink = io.StringIO()
+
+    # Create a handler that captures+records events with allowed tags.
+    handler = logging.StreamHandler(sink)
+
+    e = EventLog(
+        handlers=[handler],
+        allowed_schemas=[schema_id],
+        collect_personal_data=True,
+        allowed_categories=categories
     )
     e.register_schema(schema)
 

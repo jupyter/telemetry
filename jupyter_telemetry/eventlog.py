@@ -23,25 +23,20 @@ except ImportError as e:
         # conda install the 'real' ruamel.yaml to fix
         raise ImportError("Missing dependency ruamel.yaml. Try: `conda install ruamel.yaml`")
 
-from traitlets import List
+from traitlets import (
+    List,
+    Set,
+    Unicode,
+    Callable,
+    Bool
+)
 from traitlets.config import Configurable, Config
 
 from .traits import Handlers
 from . import TELEMETRY_METADATA_VERSION
-from .formatter import JsonEventFormatter
+from .formatter import JsonEventWithPersonalDataFormatter
 
 yaml = YAML(typ='safe')
-
-
-def _skip_message(record, **kwargs):
-    """
-    Remove 'message' from log record.
-
-    It is always emitted with 'null', and we do not want it,
-    since we are always emitting events only
-    """
-    del record['message']
-    return json.dumps(record, **kwargs)
 
 
 class EventLog(Configurable):
@@ -50,28 +45,43 @@ class EventLog(Configurable):
     """
     handlers = Handlers(
         [],
-        config=True,
         allow_none=True,
         help="""A list of logging.Handler instances to send events to.
 
         When set to None (the default), events are discarded.
         """
-    )
+    ).tag(config=True)
 
     allowed_schemas = List(
         [],
-        config=True,
         help="""
         Fully qualified names of schemas to record.
 
         Each schema you want to record must be manually specified.
         The default, an empty list, means no events are recorded.
         """
+    ).tag(config=True)
+
+    collect_personal_data = Bool(
+        False,
+        help="""
+        If False, no events with personal data will be collected. All events require
+        an explicit statement of whether personal data is included.
+        """
     )
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    allowed_categories = List(
+        [],
+        help="""
+        List of property categories to allow in all recorded events.
+        """
+    ).tag(config=True)
 
+
+    def __init__(self, *args, **kwargs):
+        # We need to initialize the configurable before
+        # adding the logging handlers.
+        super().__init__(*args, **kwargs)
         # Use a unique name for the logger so that multiple instances of EventLog do not write
         # to each other's handlers.
         log_name = __name__ + '.' + str(id(self))
@@ -81,18 +91,29 @@ class EventLog(Configurable):
         # We will use log.info to emit
         self.log.setLevel(logging.INFO)
         self.schemas = {}
-
+        # Add each handler to the logger and format the handlers.
         if self.handlers:
             for handler in self.handlers:
-                # Create a formatter for this handler.
-                formatter = JsonEventFormatter(
-                    logger=self,
-                    handler=handler,
-                    json_serializer=_skip_message
-                )
-                # Set formatted for handler.
-                handler.setFormatter(formatter)
+                handler = self.format_handler(handler)
                 self.log.addHandler(handler)
+
+    def format_handler(self, handler):
+        """Add a formatter that checks for sensitive data.
+        """
+        allowed_categories = getattr(
+            handler,
+            "hashed_categories",
+            self.allowed_categories
+        )
+
+        # Create a formatter for this handler.
+        formatter = JsonEventWithPersonalDataFormatter(
+            self,
+            allowed_categories
+        )
+        # Set formatted for handler.
+        handler.setFormatter(formatter)
+        return handler
 
     def _load_config(self, cfg, section_names=None, traits=None):
         """Load EventLog traits from a Config object, patching the
@@ -132,18 +153,24 @@ class EventLog(Configurable):
         jsonschema.validators.validator_for(schema).check_schema(schema)
 
         # Check that the properties we require are present
-        required_schema_fields = {'$id', 'version', 'properties'}
+        required_schema_fields = {'$id', 'version', 'properties', 'personal-data'}
         for rsf in required_schema_fields:
             if rsf not in schema:
                 raise ValueError(
                     '{} is required in schema specification'.format(rsf)
                 )
 
-        # Make sure reserved, auto-added fields are not in schema
-        if any([p.startswith('__') for p in schema['properties']]):
-            raise ValueError(
-                'Schema {} has properties beginning with __, which is not allowed'
-            )
+        for p, attrs in schema['properties'].items():
+            if p.startswith('__'):
+                raise ValueError(
+                    'Schema {} has properties beginning with __, which is not allowed'
+                )
+            if 'category' not in attrs:
+                raise KeyError(
+                    'All properties must have a "category" field that describes '
+                    'the type of data being collected. The "{}" property does not '
+                    'have a category field.'.format(p)
+                )
 
         self.schemas[(schema['$id'], schema['version'])] = schema
 
@@ -161,17 +188,28 @@ class EventLog(Configurable):
                 schema_name=schema_name, version=version
             ))
         schema = self.schemas[(schema_name, version)]
-        jsonschema.validate(event, schema)
 
-        if timestamp_override is None:
-            timestamp = datetime.utcnow()
-        else:
-            timestamp = timestamp_override
-        capsule = {
-            '__timestamp__': timestamp.isoformat() + 'Z',
-            '__schema__': schema_name,
-            '__schema_version__': version,
-            '__metadata_version__': TELEMETRY_METADATA_VERSION
-        }
-        capsule.update(event)
-        self.log.info(capsule)
+        # Only emit the event if personal data is allowed,
+        # or personal data is not found in the event.
+        if any((
+            # If the event contains personal data and personal
+            # data is allowed, emit the event.
+            schema['personal-data'] and self.collect_personal_data,
+            # If the event does not contain personal data,
+            # emit the event.
+            not schema['personal-data']
+        )):
+            # Validate the event data.
+            jsonschema.validate(event, schema)
+            if timestamp_override is None:
+                timestamp = datetime.utcnow()
+            else:
+                timestamp = timestamp_override
+            capsule = {
+                '__timestamp__': timestamp.isoformat() + 'Z',
+                '__schema__': schema_name,
+                '__schema_version__': version,
+                '__metadata_version__': TELEMETRY_METADATA_VERSION,
+            }
+            capsule.update(event)
+            self.log.info(capsule)

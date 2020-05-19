@@ -53,10 +53,11 @@ def test_reserved_properties():
         el.register_schema({
             '$id': 'test/test',
             'version': 1,
+            'personal-data': False,
             'properties': {
                 '__fail__': {
                     'type': 'string',
-                    'level': 'unclassified'
+                    'category': 'unrestricted'
                 },
             },
         })
@@ -69,9 +70,11 @@ def test_timestamp_override():
     schema = {
         '$id': 'test/test',
         'version': 1,
+        'personal-data': False,
         'properties': {
             'something': {
-                'type': 'string'
+                'type': 'string',
+                'category': 'unrestricted'
             },
         },
     }
@@ -99,10 +102,11 @@ def test_record_event():
     schema = {
         '$id': 'test/test',
         'version': 1,
+        'personal-data': False,
         'properties': {
             'something': {
                 'type': 'string',
-                'level': 'unclassified'
+                'category': 'unrestricted'
             },
         },
     }
@@ -138,10 +142,11 @@ def test_register_schema_file():
     schema = {
         '$id': 'test/test',
         'version': 1,
+        'personal-data': False,
         'properties': {
             'something': {
                 'type': 'string',
-                'level': 'unclassified'
+                'category': 'unrestricted'
             },
         },
     }
@@ -167,10 +172,11 @@ def test_allowed_schemas():
     schema = {
         '$id': 'test/test',
         'version': 1,
+        'personal-data': False,
         'properties': {
             'something': {
                 'type': 'string',
-                'level': 'unclassified'
+                'category': 'unrestricted'
             },
         },
     }
@@ -196,14 +202,15 @@ def test_record_event_badschema():
     schema = {
         '$id': 'test/test',
         'version': 1,
+        'personal-data': False,
         'properties': {
             'something': {
                 'type': 'string',
-                'level': 'unclassified'
+                'category': 'unrestricted'
             },
             'status': {
                 'enum': ['success', 'failure'],
-                'level': 'unclassified'
+                'category': 'unrestricted'
             }
         }
     }
@@ -215,7 +222,7 @@ def test_record_event_badschema():
     with pytest.raises(jsonschema.ValidationError):
         el.record_event('test/test', 1, {
             'something': 'blah',
-            'status': 'not-in-enum'
+            'status': 'hi' #'not-in-enum'
         })
 
 
@@ -223,9 +230,11 @@ def test_unique_logger_instances():
     schema0 = {
         '$id': 'test/test0',
         'version': 1,
+        'personal-data': False,
         'properties': {
             'something': {
-                'type': 'string'
+                'type': 'string',
+                'category': 'unrestricted'
             },
         },
     }
@@ -233,9 +242,11 @@ def test_unique_logger_instances():
     schema1= {
         '$id': 'test/test1',
         'version': 1,
+        'personal-data': False,
         'properties': {
             'something': {
-                'type': 'string'
+                'type': 'string',
+                'category': 'unrestricted'
             },
         },
     }
