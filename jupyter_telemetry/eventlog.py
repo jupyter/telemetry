@@ -9,9 +9,7 @@ import jsonschema
 from ruamel.yaml import YAML
 from traitlets import (
     List,
-    Set,
     Unicode,
-    Callable,
     Bool
 )
 from traitlets.config import Configurable, Config
