@@ -29,9 +29,9 @@ class JsonEventWithPersonalDataFormatter(jsonlogger.JsonFormatter):
         # since we are always emitting events only
         del log_record['message']
         # Redact sensitive information.
-        return self.handle_category(log_record)
+        return self.handle_categories(log_record)
 
-    def handle_category(self, log_record):
+    def handle_categories(self, log_record):
         """Looks at the event schema's category for personal data.
         If personal data is present, record event only if category is allowed.
         """
@@ -46,15 +46,15 @@ class JsonEventWithPersonalDataFormatter(jsonlogger.JsonFormatter):
         # Pull out the properties from the log_record.
         props = [key for key in log_record if not key.startswith('__')]
 
-        # Walk through the recorded event and handle each key
-        # based on its tag/category.
+        # Walk through the recorded event and remove categories that
+        # are not explicitly listed in the allow_categories trait.
         for key in props:
-            category = schema['properties'][key]['category']
+            categories = schema['properties'][key]['categories']
+            allowed_categories = self.allowed_categories + ['unrestricted']
+            # All tags must be listed in the allowed_categories.
+            matched_categories = [c in allowed_categories  for c in categories]
             # Allow properties tagged with a whitelisted category.
-            if category in self.allowed_categories + ['unrestricted']:
-                continue
-            # Delete any other property
-            else:
+            if not all(matched_categories):
                 del log_record[key]
 
         return log_record

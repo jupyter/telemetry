@@ -62,10 +62,12 @@ Event schemas must be registered with the EventLog for events to be recorded. An
         "title": "My Event",
         "description": "All events must have a name property.",
         "type": "object",
+        "personal-data": false,
         "properties": {
             "name": {
                 "title": "Name",
                 "description": "Name of event",
+                "categories": ["unrestricted"],
                 "type": "string"
             }
         },

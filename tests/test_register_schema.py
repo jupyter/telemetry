@@ -57,7 +57,7 @@ def test_reserved_properties():
             'properties': {
                 '__fail__': {
                     'type': 'string',
-                    'category': 'unrestricted'
+                    'categories': ['unrestricted']
                 },
             },
         })
@@ -74,7 +74,7 @@ def test_timestamp_override():
         'properties': {
             'something': {
                 'type': 'string',
-                'category': 'unrestricted'
+                'categories': ['unrestricted']
             },
         },
     }
@@ -106,7 +106,7 @@ def test_record_event():
         'properties': {
             'something': {
                 'type': 'string',
-                'category': 'unrestricted'
+                'categories': ['unrestricted']
             },
         },
     }
@@ -146,7 +146,7 @@ def test_register_schema_file():
         'properties': {
             'something': {
                 'type': 'string',
-                'category': 'unrestricted'
+                'categories': ['unrestricted']
             },
         },
     }
@@ -176,7 +176,7 @@ def test_allowed_schemas():
         'properties': {
             'something': {
                 'type': 'string',
-                'category': 'unrestricted'
+                'categories': ['unrestricted']
             },
         },
     }
@@ -206,11 +206,11 @@ def test_record_event_badschema():
         'properties': {
             'something': {
                 'type': 'string',
-                'category': 'unrestricted'
+                'categories': ['unrestricted']
             },
             'status': {
                 'enum': ['success', 'failure'],
-                'category': 'unrestricted'
+                'categories': ['unrestricted']
             }
         }
     }
@@ -234,7 +234,7 @@ def test_unique_logger_instances():
         'properties': {
             'something': {
                 'type': 'string',
-                'category': 'unrestricted'
+                'categories': ['unrestricted']
             },
         },
     }
@@ -246,7 +246,7 @@ def test_unique_logger_instances():
         'properties': {
             'something': {
                 'type': 'string',
-                'category': 'unrestricted'
+                'categories': ['unrestricted']
             },
         },
     }

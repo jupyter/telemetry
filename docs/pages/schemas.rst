@@ -16,7 +16,7 @@ At a minimum, valid Jupyter Telemetry Event schema requires have the following k
 
     + ``title`` : name of the property
     + ``description``: documentation for this property.
-    + ``category``: type of data being collected
+    + ``categories``: list of types of data being collected
 
 - ``required``: list of required properties.
 
@@ -34,11 +34,13 @@ Here is a minimal example of a valid JSON schema for an event.
     properties:
       thing:
         title: Thing
-        category: unrestricted
+        categories:
+          - unrestricted
         description: A random thing.
       user:
         title: User name
-        catergory: user-identifier
+        categories:
+          - user-identifier
         description: Name of user who initiated event
     required:
     - thing

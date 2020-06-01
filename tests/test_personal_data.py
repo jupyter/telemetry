@@ -1,6 +1,8 @@
 import io
 import json
 import logging
+from textwrap import dedent as _
+from ruamel.yaml import YAML
 
 from jupyter_telemetry.eventlog import EventLog
 
@@ -27,21 +29,112 @@ def schema(schema_id, version):
         'properties': {
             'nothing-exciting': {
                 'description': 'a property with nothing exciting happening',
-                'category': 'unrestricted',
+                'categories': ['unrestricted'],
                 'type': 'string'
             },
             'id': {
                 'description': 'user ID',
-                'category': 'user-identifier',
+                'categories': ['user-identifier'],
                 'type': 'string'
             },
             'email': {
                 'description': 'email address',
-                'category': 'user-identifiable-information',
+                'categories': ['user-identifiable-information'],
                 'type': 'string'
             },
         }
     }
+
+
+def test_raised_exception_for_nonlist_categories():
+    # Bad schema in yaml form.
+    yaml_schema = _("""\
+    $id: test.schema
+    title: Test Event
+    version: 1
+    personal-data: true
+    type: object
+    properties:
+      test_property:
+        description: testing a property
+        categories: user-identifier
+        type: string
+    """)
+    yaml = YAML(typ='safe')
+    schema = yaml.load(yaml_schema)
+
+    # Register schema with an EventLog
+    e = EventLog(
+        allowed_schemas=[schema_id],
+        collect_personal_data=False,
+    )
+
+    # This schema does not have categories as a list.
+    with pytest.raises(ValueError) as err:
+        e.register_schema(schema)
+    # Verify that the error message is the expected error message.
+    assert 'must be a list.' in str(err.value)
+
+
+def test_raised_exception_for_categories_with_more_than_restricted():
+    # Bad schema in yaml form.
+    yaml_schema = _("""\
+    $id: test.schema
+    title: Test Event
+    version: 1
+    personal-data: true
+    type: object
+    properties:
+      test_property:
+        description: testing a property
+        categories:
+            - unrestricted
+            - random-category
+        type: string
+    """)
+    yaml = YAML(typ='safe')
+    schema = yaml.load(yaml_schema)
+
+    # Register schema with an EventLog
+    e = EventLog(
+        allowed_schemas=[schema_id],
+        collect_personal_data=False,
+    )
+
+    # This schema does not have categories as a list.
+    with pytest.raises(ValueError) as err:
+        e.register_schema(schema)
+    # Verify that the error message is the expected error message.
+    assert '`unresticted` is a special category' in str(err.value)
+
+
+def test_missing_categories_label():
+    # Bad schema in yaml form.
+    yaml_schema = _("""\
+    $id: test.schema
+    title: Test Event
+    version: 1
+    personal-data: true
+    type: object
+    properties:
+      test_property:
+        description: testing a property
+        type: string
+    """)
+    yaml = YAML(typ='safe')
+    schema = yaml.load(yaml_schema)
+
+    # Register schema with an EventLog
+    e = EventLog(
+        allowed_schemas=[schema_id],
+        collect_personal_data=False,
+    )
+
+    # This schema does not have categories as a list.
+    with pytest.raises(KeyError) as err:
+        e.register_schema(schema)
+    # Verify that the error message is the expected error message.
+    assert 'All properties must have a "categories"' in str(err.value)
 
 
 def test_collect_personal_data_false(schema, schema_id, version):
