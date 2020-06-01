@@ -19,7 +19,7 @@ Jupyter Telemetry requires all event schemas to define a boolean field, ``person
 
   Since the [GDPR] definition includes “any information,” one must assume that the term “personal data” should be as broadly interpreted as possible.
 
-Further, Jupyter Telemetry also requires that every property within an event has a ``category`` field explicitly labeling the type of personal data being collected.
+Further, Jupyter Telemetry also requires that every property within an event has a ``categories`` field explicitly labeling the type of personal data being collected.
 
 .. code-block:: yaml
 
@@ -29,16 +29,19 @@ Further, Jupyter Telemetry also requires that every property within an event has
     properties:
       name:
         title: Name
-        category: unrestricted
+        categories:
+          - unrestricted
         description: Name of event
         type: string
       user:
         title: User name
-        category: personal-identifier
+        categories:
+           - personal-identifier
         description: Name of the user who initiated the event.
       affiliation:
         title: Affiliation
-        category: personally-identifiable-information
+        categories:
+          - personally-identifiable-information
         description: Affiliation of the user.
 
 
@@ -69,4 +72,4 @@ To record properties with other categories, explicitly list these categories in 
     )
 
 
-The ``category`` field is a "free field" for schema authors to define. The only special value is ``unrestricted``. The category field requires all schemas to be explicit about the types of data included an logged event capsule, and it ensures that administrators know exactly what type of data they are collecting.
+The ``categories`` field is a "free field" for schema authors to define. The only special value is ``unrestricted``. The "categories" field requires all schemas to be explicit about the types of data included an logged event capsule, and it ensures that administrators know exactly what type of data they are collecting.

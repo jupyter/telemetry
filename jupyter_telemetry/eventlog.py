@@ -144,12 +144,31 @@ class EventLog(Configurable):
                 raise ValueError(
                     'Schema {} has properties beginning with __, which is not allowed'
                 )
-            if 'category' not in attrs:
+
+            # Validate "categories" property in proposed schema.
+            try:
+                cats = attrs['categories']
+                # Categories must be a list.
+                if not isinstance(cats, list):
+                    raise ValueError(
+                        'The "categories" field in a registered schemas must be a list.'
+                    )
+
+                # Unrestricted is a special case and must be listed alone:
+                if 'unrestricted' in cats and len(cats) > 1:
+                    raise ValueError(
+                        '`unresticted` is a special category. Properties with '
+                        '`unrestricted` in their categories list cannot have '
+                        'other categories listed too. All `unrestricted` properties '
+                        'are emitted when the event is recorded.'
+                    )
+            except KeyError:
                 raise KeyError(
-                    'All properties must have a "category" field that describes '
+                    'All properties must have a "categories" field that describes '
                     'the type of data being collected. The "{}" property does not '
                     'have a category field.'.format(p)
                 )
+
 
         self.schemas[(schema['$id'], schema['version'])] = schema
 
