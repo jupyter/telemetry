@@ -169,7 +169,6 @@ class EventLog(Configurable):
                     'have a category field.'.format(p)
                 )
 
-
         self.schemas[(schema['$id'], schema['version'])] = schema
 
     def record_event(self, schema_name, version, event, timestamp_override=None):

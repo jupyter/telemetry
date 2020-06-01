@@ -52,7 +52,7 @@ class JsonEventWithPersonalDataFormatter(jsonlogger.JsonFormatter):
             categories = schema['properties'][key]['categories']
             allowed_categories = self.allowed_categories + ['unrestricted']
             # All tags must be listed in the allowed_categories.
-            matched_categories = [c in allowed_categories  for c in categories]
+            matched_categories = [c in allowed_categories for c in categories]
             # Allow properties tagged with a whitelisted category.
             if not all(matched_categories):
                 del log_record[key]
