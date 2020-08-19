@@ -9,23 +9,17 @@ from jupyter_telemetry.eventlog import EventLog
 import pytest
 
 
-@pytest.fixture
-def version(): return 1
-
-
-@pytest.fixture()
-def schema_id(): return 'test.event'
-
+SCHEMA_ID = "test.event"
+VERSION = 1
 
 @pytest.fixture
-def schema(schema_id, version):
+def schema():
     return  {
-        '$id': schema_id,
+        '$id': SCHEMA_ID,
         'title': 'Test Event',
-        'version': version,
+        'version': VERSION,
         'description': 'Test Event.',
         'type': 'object',
-        'personal-data': True,
         'properties': {
             'nothing-exciting': {
                 'description': 'a property with nothing exciting happening',
@@ -52,7 +46,6 @@ def test_raised_exception_for_nonlist_categories():
     $id: test.schema
     title: Test Event
     version: 1
-    personal-data: true
     type: object
     properties:
       test_property:
@@ -65,8 +58,11 @@ def test_raised_exception_for_nonlist_categories():
 
     # Register schema with an EventLog
     e = EventLog(
-        allowed_schemas=[schema_id],
-        collect_personal_data=False,
+        allowed_schemas={
+            SCHEMA_ID: {
+                "allowed_categories": ["user-identifier"]
+            }
+        },
     )
 
     # This schema does not have categories as a list.
@@ -82,7 +78,6 @@ def test_raised_exception_for_categories_with_more_than_restricted():
     $id: test.schema
     title: Test Event
     version: 1
-    personal-data: true
     type: object
     properties:
       test_property:
@@ -97,8 +92,11 @@ def test_raised_exception_for_categories_with_more_than_restricted():
 
     # Register schema with an EventLog
     e = EventLog(
-        allowed_schemas=[schema_id],
-        collect_personal_data=False,
+        allowed_schemas={
+            SCHEMA_ID: {
+                "allowed_categories": ["random-category"]
+            }
+        },
     )
 
     # This schema does not have categories as a list.
@@ -114,7 +112,6 @@ def test_missing_categories_label():
     $id: test.schema
     title: Test Event
     version: 1
-    personal-data: true
     type: object
     properties:
       test_property:
@@ -126,8 +123,11 @@ def test_missing_categories_label():
 
     # Register schema with an EventLog
     e = EventLog(
-        allowed_schemas=[schema_id],
-        collect_personal_data=False,
+        allowed_schemas={
+            SCHEMA_ID: {
+                "allowed_categories": ["random-category"]
+            }
+        }
     )
 
     # This schema does not have categories as a list.
@@ -137,41 +137,49 @@ def test_missing_categories_label():
     assert 'All properties must have a "categories"' in str(err.value)
 
 
-def test_collect_personal_data_false(schema, schema_id, version):
-    sink = io.StringIO()
-
-    # Create a handler that captures+records events with allowed tags.
-    handler = logging.StreamHandler(sink)
-
-    e = EventLog(
-        handlers=[handler],
-        allowed_schemas=[schema_id],
-        collect_personal_data=False,
-    )
-    e.register_schema(schema)
-
-    event = {
-        'nothing-exciting': 'hello, world',
-        'id': 'test id',
-        'email': 'test@testemail.com',
-    }
-
-    # Record event and read output
-    e.record_event(schema_id, version, event)
-    assert sink.getvalue() == ''
-
-
 @pytest.mark.parametrize(
-    'categories,expected_props',
+    'allowed_schemas,expected_recorded_props',
     [
-        ([], {'nothing-exciting'}),
-        (['unrestricted'], {'nothing-exciting'}),
-        (['user-identifier'], {'nothing-exciting', 'id'}),
-        (['user-identifiable-information'], {'nothing-exciting', 'email'}),
-        (['user-identifier', 'user-identifiable-information'], {'nothing-exciting', 'email', 'id'})
+        (
+            # User configuration for allowed_schemas
+            {SCHEMA_ID: {"allowed_categories": []}},
+            # Expected properties in the recorded event
+            {'nothing-exciting'}
+        ),
+        (
+            # User configuration for allowed_schemas
+            {SCHEMA_ID: {"allowed_categories": ["unrestricted"]}},
+            # Expected properties in the recorded event
+            {'nothing-exciting'}
+        ),
+        (
+            # User configuration for allowed_schemas
+            {SCHEMA_ID: {"allowed_categories": ["user-identifier"]}},
+            # Expected properties in the recorded event
+            {'nothing-exciting', 'id'}
+        ),
+        (
+            # User configuration for allowed_schemas
+            {SCHEMA_ID: {"allowed_categories": ["user-identifiable-information"]}},
+            # Expected properties in the recorded event
+            {'nothing-exciting', 'email'}
+        ),
+        (
+            # User configuration for allowed_schemas
+            {
+                SCHEMA_ID: {
+                    "allowed_categories": [
+                        "user-identifier",
+                        "user-identifiable-information"
+                    ]
+                }
+            },
+            # Expected properties in the recorded event
+            {'nothing-exciting', 'email', 'id'}
+        )
     ]
 )
-def test_category_filtering(schema, schema_id, version, categories, expected_props):
+def test_category_filtering(schema, allowed_schemas, expected_recorded_props):
     sink = io.StringIO()
 
     # Create a handler that captures+records events with allowed tags.
@@ -179,9 +187,7 @@ def test_category_filtering(schema, schema_id, version, categories, expected_pro
 
     e = EventLog(
         handlers=[handler],
-        allowed_schemas=[schema_id],
-        collect_personal_data=True,
-        allowed_categories=categories
+        allowed_schemas=allowed_schemas
     )
     e.register_schema(schema)
 
@@ -192,9 +198,9 @@ def test_category_filtering(schema, schema_id, version, categories, expected_pro
     }
 
     # Record event and read output
-    e.record_event(schema_id, version, event)
+    e.record_event(SCHEMA_ID, VERSION, event)
     recorded_event = json.loads(sink.getvalue())
     recorded_props = set([key for key in recorded_event if not key.startswith('__')])
-
-    assert expected_props == recorded_props
+    # Verify that *exactly* the right properties are recorded.
+    assert expected_recorded_props == recorded_props
 
