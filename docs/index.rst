@@ -42,16 +42,16 @@ Here's a basic example of an EventLog.
             logging.FileHandler('events.log')
         ],
         # List schemas of events that should be recorded.
-        allowed_schemas=[
-            'uri.to.event.schema'
-        ]
+        allowed_schemas={
+            'uri.to.event.schema': {"allowed_categories": "*"}
+        }
     )
 
 
 EventLog has two configurable traits:
 
-    - ``handlers``: a list of Python's logging handlers.
-    - ``allowed_schemas``: a list of event schemas to record.
+    - ``handlers``: a list of Python's logging handlers that handle the recording of incoming events.
+    - ``allowed_schemas``: a dictionary with schema names mapped to their data collection options.
 
 Event schemas must be registered with the EventLog for events to be recorded. An event schema looks something like:
 
@@ -62,7 +62,6 @@ Event schemas must be registered with the EventLog for events to be recorded. An
         "title": "My Event",
         "description": "All events must have a name property.",
         "type": "object",
-        "personal-data": false,
         "properties": {
             "name": {
                 "title": "Name",

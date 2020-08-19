@@ -9,7 +9,6 @@ At a minimum, valid Jupyter Telemetry Event schema requires have the following k
 - ``version`` : schema version.
 - ``title`` : name of the schema
 - ``description`` : documentation for the schema
-- ``personal-data``: boolean explicitly stating if personal data is collected.
 - ``properties`` : attributes of the event being emitted.
 
     Each property should have the following attributes:
@@ -27,7 +26,6 @@ Here is a minimal example of a valid JSON schema for an event.
     $id: url.to.event.schema
     version: 1
     title: My Event
-    personal-data: true
     description: |
       All events must have a name property
     type: object
