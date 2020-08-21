@@ -60,7 +60,7 @@ def test_raised_exception_for_nonlist_categories():
     e = EventLog(
         allowed_schemas={
             SCHEMA_ID: {
-                "allowed_categories": ["user-identifier"]
+                "categories": ["user-identifier"]
             }
         },
     )
@@ -94,7 +94,7 @@ def test_raised_exception_for_categories_with_more_than_restricted():
     e = EventLog(
         allowed_schemas={
             SCHEMA_ID: {
-                "allowed_categories": ["random-category"]
+                "categories": ["random-category"]
             }
         },
     )
@@ -125,7 +125,7 @@ def test_missing_categories_label():
     e = EventLog(
         allowed_schemas={
             SCHEMA_ID: {
-                "allowed_categories": ["random-category"]
+                "categories": ["random-category"]
             }
         }
     )
@@ -142,25 +142,25 @@ def test_missing_categories_label():
     [
         (
             # User configuration for allowed_schemas
-            {SCHEMA_ID: {"allowed_categories": []}},
+            {SCHEMA_ID: {"categories": []}},
             # Expected properties in the recorded event
             {'nothing-exciting'}
         ),
         (
             # User configuration for allowed_schemas
-            {SCHEMA_ID: {"allowed_categories": ["unrestricted"]}},
+            {SCHEMA_ID: {"categories": ["unrestricted"]}},
             # Expected properties in the recorded event
             {'nothing-exciting'}
         ),
         (
             # User configuration for allowed_schemas
-            {SCHEMA_ID: {"allowed_categories": ["user-identifier"]}},
+            {SCHEMA_ID: {"categories": ["user-identifier"]}},
             # Expected properties in the recorded event
             {'nothing-exciting', 'id'}
         ),
         (
             # User configuration for allowed_schemas
-            {SCHEMA_ID: {"allowed_categories": ["user-identifiable-information"]}},
+            {SCHEMA_ID: {"categories": ["user-identifiable-information"]}},
             # Expected properties in the recorded event
             {'nothing-exciting', 'email'}
         ),
@@ -168,7 +168,7 @@ def test_missing_categories_label():
             # User configuration for allowed_schemas
             {
                 SCHEMA_ID: {
-                    "allowed_categories": [
+                    "categories": [
                         "user-identifier",
                         "user-identifiable-information"
                     ]
@@ -179,7 +179,7 @@ def test_missing_categories_label():
         ),
         (
             # User configuration for allowed_schemas
-            {SCHEMA_ID: {"allowed_properties": ["id"]}},
+            {SCHEMA_ID: {"properties": ["id"]}},
             # Expected properties in the recorded event
             {'nothing-exciting', 'id'}
         ),
@@ -187,8 +187,8 @@ def test_missing_categories_label():
             # User configuration for allowed_schemas
             {
                 SCHEMA_ID: {
-                    "allowed_properties": ["id"],
-                    "allowed_categories": ["user-identifiable-information"],
+                    "properties": ["id"],
+                    "categories": ["user-identifiable-information"],
                 }
             },
             # Expected properties in the recorded event
