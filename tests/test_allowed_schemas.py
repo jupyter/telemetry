@@ -176,10 +176,27 @@ def test_missing_categories_label():
             },
             # Expected properties in the recorded event
             {'nothing-exciting', 'email', 'id'}
-        )
+        ),
+        (
+            # User configuration for allowed_schemas
+            {SCHEMA_ID: {"allowed_properties": ["id"]}},
+            # Expected properties in the recorded event
+            {'nothing-exciting', 'id'}
+        ),
+        (
+            # User configuration for allowed_schemas
+            {
+                SCHEMA_ID: {
+                    "allowed_properties": ["id"],
+                    "allowed_categories": ["user-identifiable-information"],
+                }
+            },
+            # Expected properties in the recorded event
+            {'nothing-exciting', 'id', 'email'}
+        ),
     ]
 )
-def test_category_filtering(schema, allowed_schemas, expected_recorded_props):
+def test_allowed_schemas(schema, allowed_schemas, expected_recorded_props):
     sink = io.StringIO()
 
     # Create a handler that captures+records events with allowed tags.

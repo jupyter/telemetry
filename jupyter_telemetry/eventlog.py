@@ -46,6 +46,7 @@ class EventLog(Configurable):
 
     allowed_schemas = SchemaOptions(
         {},
+        allow_none=True,
         help="""
         Fully qualified names of schemas to record.
 
@@ -152,16 +153,26 @@ class EventLog(Configurable):
 
         self.schemas[(schema['$id'], schema['version'])] = schema
 
+    def get_allowed_properties(self, schema_name):
+        """Get the allowed properties for an allowed schema."""
+        config = self.allowed_schemas[schema_name]
+        try:
+            return set(config["properties"])
+        except KeyError:
+            return set()
 
     def get_allowed_categories(self, schema_name):
         """
         Return a set of allowed categories for a given schema
         from the EventLog's config.
         """
-        allowed_categories = self.allowed_schemas[schema_name]["allowed_categories"]
-        allowed_categories.append("unrestricted")
-        return set(allowed_categories)
-
+        config = self.allowed_schemas[schema_name]
+        try:
+            allowed_categories = config["categories"]
+            allowed_categories.append("unrestricted")
+            return set(allowed_categories)
+        except KeyError:
+            return {"unrestricted"}
 
     def record_event(self, schema_name, version, event, timestamp_override=None):
         """
@@ -195,16 +206,22 @@ class EventLog(Configurable):
         }
 
         # Filter properties in the incoming event based on the
-        # allowed categories from the eventlog config.
+        # allowed categories and properties from the eventlog config.
         allowed_categories = self.get_allowed_categories(schema_name)
+        allowed_properties = self.get_allowed_properties(schema_name)
 
         # Iterate through the event properties, and only record the
         # properties labelled with allowed_categories
         for property_name, data in event.items():
             prop_categories = schema["properties"][property_name]["categories"]
+            # If the property is explicitly listed in
+            # the allowed_properties, then include it in the capsule
+            if property_name in allowed_properties:
+                capsule[property_name] = data
             # All of the property categories must be listed in the the allowed
             # categories for this property to be recorded.
-            if all([cat in allowed_categories for cat in prop_categories]):
+            # QUESTION: should this be an any or all?
+            elif all([cat in allowed_categories for cat in prop_categories]):
                 capsule[property_name] = data
 
         self.log.info(capsule)
