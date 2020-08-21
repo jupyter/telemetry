@@ -1,5 +1,5 @@
-Writing a Schema
-================
+Writing a schema for telemetry
+==============================
 
 All Schemas should be a valid `JSON schema`_ and can be written in valid YAML or JSON.
 
