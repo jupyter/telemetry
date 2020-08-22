@@ -71,7 +71,6 @@ class EventLog(Configurable):
         """
     ).tag(config=True)
 
-
     def __init__(self, *args, **kwargs):
         # We need to initialize the configurable before
         # adding the logging handlers.
