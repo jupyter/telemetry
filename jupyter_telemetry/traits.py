@@ -63,7 +63,7 @@ class SchemaOptions(TraitType):
                         "The schema option, {schema_name}, includes "
                         "unknown key(s): {unknown_keys}".format(
                            schema_name=schema_name,
-                           unknown_keys= ",".join(unknown_keys)
+                           unknown_keys=",".join(unknown_keys)
                         )
                     )
             validated_val = val

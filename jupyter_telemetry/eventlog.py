@@ -8,11 +8,6 @@ from datetime import datetime
 import jsonschema
 from pythonjsonlogger import jsonlogger
 from ruamel.yaml import YAML
-from traitlets import (
-    List,
-    Dict,
-    Bool
-)
 from traitlets.config import Configurable, Config
 
 from .traits import Handlers, SchemaOptions
@@ -54,7 +49,6 @@ class EventLog(Configurable):
         The default, an empty list, means no events are recorded.
         """
     ).tag(config=True)
-
 
     def __init__(self, *args, **kwargs):
         # We need to initialize the configurable before
