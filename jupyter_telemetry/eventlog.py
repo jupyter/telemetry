@@ -235,8 +235,7 @@ class EventLog(Configurable):
                 capsule[property_name] = data
             # All of the property categories must be listed in the the allowed
             # categories for this property to be recorded.
-            # QUESTION: should this be an any or all?
-            elif all([cat in allowed_categories for cat in prop_categories]):
+            elif any([cat in allowed_categories for cat in prop_categories]):
                 capsule[property_name] = data
 
         self.log.info(capsule)
