@@ -3,7 +3,7 @@
 Adding telemetry to an application
 ==================================
 
-Jupyter Telemetry enables you to log events from your running application. (It's designed to work best with traitlet's applications for simple configuration.) To use telemetry, begin by creating an instance of ``EventLog``:
+Jupyter Telemetry enables you to log events from your running application. (It's designed to work best with traitlet's `Application` object for simple configuration.) To use telemetry, begin by creating an instance of ``EventLog``:
 
 .. code-block:: python
 
@@ -31,7 +31,7 @@ EventLog has two configurable traits:
 Next, you'll need to register event schemas for your application. You can register schemas using the ``register_schema_file`` (JSON or YAML format) or ``register_schema`` methods.
 
 
-Once your have an instance of ``EventLog`` and your registered schemas, you can use the ``record`` method to log that event.
+Once your have an instance of ``EventLog`` and your registered schemas, you can use the ``record_event`` method to log that event.
 
 .. code-block:: python
 

@@ -53,7 +53,6 @@ def test_reserved_properties():
         el.register_schema({
             '$id': 'test/test',
             'version': 1,
-            'personal-data': False,
             'properties': {
                 '__fail__': {
                     'type': 'string',
@@ -70,7 +69,6 @@ def test_timestamp_override():
     schema = {
         '$id': 'test/test',
         'version': 1,
-        'personal-data': False,
         'properties': {
             'something': {
                 'type': 'string',
@@ -102,7 +100,6 @@ def test_record_event():
     schema = {
         '$id': 'test/test',
         'version': 1,
-        'personal-data': False,
         'properties': {
             'something': {
                 'type': 'string',
@@ -142,7 +139,6 @@ def test_register_schema_file():
     schema = {
         '$id': 'test/test',
         'version': 1,
-        'personal-data': False,
         'properties': {
             'something': {
                 'type': 'string',
@@ -172,7 +168,6 @@ def test_allowed_schemas():
     schema = {
         '$id': 'test/test',
         'version': 1,
-        'personal-data': False,
         'properties': {
             'something': {
                 'type': 'string',
@@ -202,7 +197,6 @@ def test_record_event_badschema():
     schema = {
         '$id': 'test/test',
         'version': 1,
-        'personal-data': False,
         'properties': {
             'something': {
                 'type': 'string',
@@ -230,7 +224,6 @@ def test_unique_logger_instances():
     schema0 = {
         '$id': 'test/test0',
         'version': 1,
-        'personal-data': False,
         'properties': {
             'something': {
                 'type': 'string',
@@ -242,7 +235,6 @@ def test_unique_logger_instances():
     schema1= {
         '$id': 'test/test1',
         'version': 1,
-        'personal-data': False,
         'properties': {
             'something': {
                 'type': 'string',

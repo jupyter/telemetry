@@ -46,5 +46,3 @@ Here is a minimal example of a valid JSON schema for an event.
 
 
 .. _JSON schema: https://json-schema.org/
-
-It is important that every schema explicity state whether it collects personal-data or not. See the :ref:`Personal Data` page for more information.
