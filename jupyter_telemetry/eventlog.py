@@ -24,11 +24,6 @@ except ImportError as e:
         # conda install the 'real' ruamel.yaml to fix
         raise ImportError("Missing dependency ruamel.yaml. Try: `conda install ruamel.yaml`")
 
-from traitlets import (
-    List,
-    Dict,
-    Bool
-)
 from traitlets.config import Configurable, Config
 
 from .traits import Handlers, SchemaOptions
