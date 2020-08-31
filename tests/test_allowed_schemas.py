@@ -72,40 +72,6 @@ def test_raised_exception_for_nonlist_categories():
     assert 'must be a list.' in str(err.value)
 
 
-def test_raised_exception_for_categories_with_more_than_restricted():
-    # Bad schema in yaml form.
-    yaml_schema = _("""\
-    $id: test.schema
-    title: Test Event
-    version: 1
-    type: object
-    properties:
-      test_property:
-        description: testing a property
-        categories:
-            - unrestricted
-            - random-category
-        type: string
-    """)
-    yaml = YAML(typ='safe')
-    schema = yaml.load(yaml_schema)
-
-    # Register schema with an EventLog
-    e = EventLog(
-        allowed_schemas={
-            SCHEMA_ID: {
-                "categories": ["random-category"]
-            }
-        },
-    )
-
-    # This schema does not have categories as a list.
-    with pytest.raises(ValueError) as err:
-        e.register_schema(schema)
-    # Verify that the error message is the expected error message.
-    assert '`unresticted` is a special category' in str(err.value)
-
-
 def test_missing_categories_label():
     # Bad schema in yaml form.
     yaml_schema = _("""\

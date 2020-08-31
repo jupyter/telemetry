@@ -71,7 +71,7 @@ class SchemaOptions(TraitType):
         elif type(val) is list:
             validated_val = {}
             for schema_name in val:
-                validated_val[schema_name] = {"categories": []}
+                validated_val[schema_name] = {}
         else:
             raise TraitError("SchemaOptions must be of type dict or list.")
         return validated_val

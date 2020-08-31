@@ -150,15 +150,6 @@ class EventLog(Configurable):
                     raise ValueError(
                         'The "categories" field in a registered schemas must be a list.'
                     )
-
-                # Unrestricted is a special case and must be listed alone:
-                if 'unrestricted' in cats and len(cats) > 1:
-                    raise ValueError(
-                        '`unresticted` is a special category. Properties with '
-                        '`unrestricted` in their categories list cannot have '
-                        'other categories listed too. All `unrestricted` properties '
-                        'are emitted when the event is recorded.'
-                    )
             except KeyError:
                 raise KeyError(
                     'All properties must have a "categories" field that describes '
