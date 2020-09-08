@@ -223,5 +223,8 @@ class EventLog(Configurable):
             # categories for this property to be recorded.
             elif any([cat in allowed_categories for cat in prop_categories]):
                 capsule[property_name] = data
+            # Else return that property with a value of null
+            else:
+                capsule[property_name] = None
 
         self.log.info(capsule)
