@@ -53,7 +53,7 @@ class SchemaOptions(TraitType):
             for schema_name, data in val.items():
                 given_keys = set(data.keys())
                 # Compare against keys expected.
-                allowed_keys = {"categories", "properties"}
+                allowed_keys = {"allowed_categories", "allowed_properties"}
                 # There should be no extra keys (anything other than
                 # allowed_keys) in the schema options.
                 unknown_keys = given_keys.difference(allowed_keys)

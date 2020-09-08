@@ -58,11 +58,11 @@ class HasSchemaOptions(HasTraits):
         # Empty nested config are okay.
         {"schema_name_1": {}},
         # Nested config with empty values is okay too.
-        {"schema_name_1": {"categories": []}},
+        {"schema_name_1": {"allowed_categories": []}},
         # Test complete config for good measure.
-        {"schema_name_1": {"categories": ["value"]}},
+        {"schema_name_1": {"allowed_categories": ["value"]}},
         # Test multiple values.
-        {"schema_name_1": {"categories": ["value"]}, "schema_name_2": {}},
+        {"schema_name_1": {"allowed_categories": ["value"]}, "schema_name_2": {}},
     ]
 )
 def test_good_schema_options(schema_options):

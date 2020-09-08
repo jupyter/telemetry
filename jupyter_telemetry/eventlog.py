@@ -158,7 +158,7 @@ class EventLog(Configurable):
         """Get the allowed properties for an allowed schema."""
         config = self.allowed_schemas[schema_name]
         try:
-            return set(config["properties"])
+            return set(config["allowed_properties"])
         except KeyError:
             return set()
 
@@ -169,7 +169,7 @@ class EventLog(Configurable):
         """
         config = self.allowed_schemas[schema_name]
         try:
-            allowed_categories = config["categories"]
+            allowed_categories = config["allowed_categories"]
             allowed_categories.append("unrestricted")
             return set(allowed_categories)
         except KeyError:
