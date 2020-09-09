@@ -26,8 +26,8 @@ Here is an example of a Jupyter configuration file, e.g. ``jupyter_config.d``, t
     # of data to begin collecting.
     allowed_schemas = {
         "uri.to.schema": {
-            "properties": ["name", "email"],
-            "categories": ["HIPPA-required"]
+            "allowed_properties": ["name", "email"],
+            "allowed_categories": ["HIPPA-required"]
         }
     }
 

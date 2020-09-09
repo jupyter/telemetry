@@ -31,7 +31,7 @@ Jupyter's Telemetry library can be installed from PyPI.
 
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Table of Contents:
 
    pages/configure

@@ -5,7 +5,7 @@ All Schemas should be a valid `JSON schema`_ and can be written in valid YAML or
 
 At a minimum, valid Jupyter Telemetry Event schema requires have the following keys:
 
-- ``$id`` : a valid URL where the schema lives.
+- ``$id`` : a URI to identify (and possibly locate) the schema.
 - ``version`` : schema version.
 - ``title`` : name of the schema
 - ``description`` : documentation for the schema
@@ -23,7 +23,7 @@ Here is a minimal example of a valid JSON schema for an event.
 
 .. code-block:: yaml
 
-    $id: url.to.event.schema
+    $id: event.jupyter.org/example-event
     version: 1
     title: My Event
     description: |
@@ -33,12 +33,12 @@ Here is a minimal example of a valid JSON schema for an event.
       thing:
         title: Thing
         categories:
-          - unrestricted
+          - category.jupyter.org/unrestricted
         description: A random thing.
       user:
         title: User name
         categories:
-          - user-identifier
+          - category.jupyter.org/user-identifier
         description: Name of user who initiated event
     required:
     - thing
@@ -46,3 +46,16 @@ Here is a minimal example of a valid JSON schema for an event.
 
 
 .. _JSON schema: https://json-schema.org/
+
+
+Property Categories
+-------------------
+
+Each property can be labelled with ``categories`` field. This makes it easier to filter properties based on a category. We recommend that schema authors use valid URIs for these labels, e.g. something like ``category.jupyter.org/unrestricted``.
+
+Below is a list of common category labels that Jupyter Telemetry recommends using:
+
+* ``category.jupyter.org/unrestricted``
+* ``category.jupyter.org/user-identifier``
+* ``category.jupyter.org/user-identifiable-information``
+* ``category.jupyter.org/action-timestamp``
