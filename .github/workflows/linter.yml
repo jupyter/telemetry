@@ -1,0 +1,24 @@
+name: Jupyter Telemetry Unit Tests
+on:
+  push:
+    branches: '*'
+  pull_request:
+    branches: '*'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v1
+    - name: Install Python 3.8
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.8
+        architecture: 'x64'
+    - name: Install the Python dependencies
+      run: |
+        pip install flake8
+        pip install -e .
+    - name: Run Linter
+      run: |
+        python -m flake8 jupyter_telemetry
