@@ -27,7 +27,7 @@ Here is an example of a Jupyter configuration file, e.g. ``jupyter_config.d``, t
     allowed_schemas = {
         "uri.to.schema": {
             "allowed_properties": ["name", "email"],
-            "allowed_categories": ["HIPPA-required"]
+            "allowed_categories": ["category.jupyter.org/user-identifier"]
         }
     }
 
