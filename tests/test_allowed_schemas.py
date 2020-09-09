@@ -103,32 +103,55 @@ def test_missing_categories_label():
     assert 'All properties must have a "categories"' in str(err.value)
 
 
+
+EVENT_DATA = {
+    'nothing-exciting': 'hello, world',
+    'id': 'test id',
+    'email': 'test@testemail.com',
+}
+
 @pytest.mark.parametrize(
-    'allowed_schemas,expected_recorded_props',
+    'allowed_schemas,expected_output',
     [
         (
             # User configuration for allowed_schemas
             {SCHEMA_ID: {"allowed_categories": []}},
             # Expected properties in the recorded event
-            {'nothing-exciting'}
+            {
+                'nothing-exciting': 'hello, world',
+                'id': None,
+                'email': None,
+            }
         ),
         (
             # User configuration for allowed_schemas
             {SCHEMA_ID: {"allowed_categories": ["unrestricted"]}},
             # Expected properties in the recorded event
-            {'nothing-exciting'}
+            {
+                'nothing-exciting': 'hello, world',
+                'id': None,
+                'email': None,
+            }
         ),
         (
             # User configuration for allowed_schemas
             {SCHEMA_ID: {"allowed_categories": ["user-identifier"]}},
             # Expected properties in the recorded event
-            {'nothing-exciting', 'id'}
+            {
+                'nothing-exciting': 'hello, world',
+                'id': 'test id',
+                'email': None,
+            }
         ),
         (
             # User configuration for allowed_schemas
             {SCHEMA_ID: {"allowed_categories": ["user-identifiable-information"]}},
             # Expected properties in the recorded event
-            {'nothing-exciting', 'email'}
+            {
+                'nothing-exciting': 'hello, world',
+                'id': None,
+                'email': 'test@testemail.com',
+            }
         ),
         (
             # User configuration for allowed_schemas
@@ -141,13 +164,21 @@ def test_missing_categories_label():
                 }
             },
             # Expected properties in the recorded event
-            {'nothing-exciting', 'email', 'id'}
+            {
+                'nothing-exciting': 'hello, world',
+                'id': 'test id',
+                'email': 'test@testemail.com',
+            }
         ),
         (
             # User configuration for allowed_schemas
             {SCHEMA_ID: {"allowed_properties": ["id"]}},
             # Expected properties in the recorded event
-            {'nothing-exciting', 'id'}
+            {
+                'nothing-exciting': 'hello, world',
+                'id': 'test id',
+                'email': None,
+            }
         ),
         (
             # User configuration for allowed_schemas
@@ -158,11 +189,15 @@ def test_missing_categories_label():
                 }
             },
             # Expected properties in the recorded event
-            {'nothing-exciting', 'id', 'email'}
+            {
+                'nothing-exciting': 'hello, world',
+                'id': 'test id',
+                'email': 'test@testemail.com',
+            }
         ),
     ]
 )
-def test_allowed_schemas(schema, allowed_schemas, expected_recorded_props):
+def test_allowed_schemas(schema, allowed_schemas, expected_output):
     sink = io.StringIO()
 
     # Create a handler that captures+records events with allowed tags.
@@ -181,9 +216,10 @@ def test_allowed_schemas(schema, allowed_schemas, expected_recorded_props):
     }
 
     # Record event and read output
-    e.record_event(SCHEMA_ID, VERSION, event)
+    e.record_event(SCHEMA_ID, VERSION, EVENT_DATA)
     recorded_event = json.loads(sink.getvalue())
-    recorded_props = set([key for key in recorded_event if not key.startswith('__')])
+    event_data = {key: value for key, value in recorded_event.items() if not key.startswith('__')}
+
     # Verify that *exactly* the right properties are recorded.
-    assert expected_recorded_props == recorded_props
+    assert expected_output == event_data
 
