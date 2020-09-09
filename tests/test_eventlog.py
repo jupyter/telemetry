@@ -40,7 +40,6 @@ def test_good_config_file(tmp_path):
     # Pass config to EventLog
     e = EventLog(config=cfg)
 
-    # Assert the 
     assert len(e.handlers) > 0
     assert isinstance(e.handlers[0], logging.Handler)
 
@@ -49,4 +48,4 @@ def test_bad_config_file(tmp_path):
     cfg = get_config_from_file(tmp_path, BAD_CONFIG)
 
     with pytest.raises(TraitError):
-        e = EventLog(config=cfg)
+        EventLog(config=cfg)

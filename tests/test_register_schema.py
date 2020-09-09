@@ -55,7 +55,8 @@ def test_reserved_properties():
             'version': 1,
             'properties': {
                 '__fail__': {
-                    'type': 'string'
+                    'type': 'string',
+                    'categories': ['unrestricted']
                 },
             },
         })
@@ -70,7 +71,8 @@ def test_timestamp_override():
         'version': 1,
         'properties': {
             'something': {
-                'type': 'string'
+                'type': 'string',
+                'categories': ['unrestricted']
             },
         },
     }
@@ -100,7 +102,8 @@ def test_record_event():
         'version': 1,
         'properties': {
             'something': {
-                'type': 'string'
+                'type': 'string',
+                'categories': ['unrestricted']
             },
         },
     }
@@ -138,7 +141,8 @@ def test_register_schema_file():
         'version': 1,
         'properties': {
             'something': {
-                'type': 'string'
+                'type': 'string',
+                'categories': ['unrestricted']
             },
         },
     }
@@ -166,7 +170,8 @@ def test_allowed_schemas():
         'version': 1,
         'properties': {
             'something': {
-                'type': 'string'
+                'type': 'string',
+                'categories': ['unrestricted']
             },
         },
     }
@@ -194,10 +199,12 @@ def test_record_event_badschema():
         'version': 1,
         'properties': {
             'something': {
-                'type': 'string'
+                'type': 'string',
+                'categories': ['unrestricted']
             },
             'status': {
-                'enum': ['success', 'failure']
+                'enum': ['success', 'failure'],
+                'categories': ['unrestricted']
             }
         }
     }
@@ -209,7 +216,7 @@ def test_record_event_badschema():
     with pytest.raises(jsonschema.ValidationError):
         el.record_event('test/test', 1, {
             'something': 'blah',
-            'status': 'not-in-enum'
+            'status': 'hi' #'not-in-enum'
         })
 
 
@@ -219,7 +226,8 @@ def test_unique_logger_instances():
         'version': 1,
         'properties': {
             'something': {
-                'type': 'string'
+                'type': 'string',
+                'categories': ['unrestricted']
             },
         },
     }
@@ -229,7 +237,8 @@ def test_unique_logger_instances():
         'version': 1,
         'properties': {
             'something': {
-                'type': 'string'
+                'type': 'string',
+                'categories': ['unrestricted']
             },
         },
     }
