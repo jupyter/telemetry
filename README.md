@@ -1,6 +1,6 @@
 # Telemetry
 
-[![CircleCI](https://circleci.com/gh/jupyter/telemetry.svg?style=svg)](https://circleci.com/gh/jupyter/telemetry)
+[![Tests](https://github.com/jupyter/telemetry/workflows/Jupyter%20Telemetry%20Unit%20Tests/badge.svg)](https://github.com/jupyter/telemetry/actions?query=workflow%3A%22Jupyter+Telemetry+Unit+Tests%22)
 [![codecov](https://codecov.io/gh/jupyter/telemetry/branch/master/graph/badge.svg)](https://codecov.io/gh/jupyter/telemetry)
 [![Documentation Status](https://readthedocs.org/projects/jupyter-telemetry/badge/?version=latest)](https://jupyter-telemetry.readthedocs.io/en/latest/?badge=latest)
 
