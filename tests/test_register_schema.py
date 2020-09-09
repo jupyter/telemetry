@@ -132,7 +132,7 @@ def test_record_event():
     }
 
 
-def test_register_schema_file():
+def test_register_schema_file(tmp_path):
     """
     Register schema from a file
     """
@@ -150,13 +150,10 @@ def test_register_schema_file():
     el = EventLog()
 
     yaml = YAML(typ='safe')
-    with tempfile.NamedTemporaryFile(mode='w') as f:
-        yaml.dump(schema, f)
-        f.flush()
 
-        f.seek(0)
-
-        el.register_schema_file(f.name)
+    schema_file = tmp_path.joinpath("schema.yml")
+    yaml.dump(schema, schema_file)
+    el.register_schema_file(str(schema_file))
 
     assert schema in el.schemas.values()
 
