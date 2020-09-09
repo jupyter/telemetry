@@ -1,4 +1,4 @@
-name: Jupyter Telemetry Unit Tests
+name: Linter
 on:
   push:
     branches: '*'
