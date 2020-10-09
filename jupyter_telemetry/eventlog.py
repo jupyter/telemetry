@@ -28,6 +28,8 @@ from traitlets.config import Configurable, Config
 
 from .traits import Handlers, SchemaOptions
 from . import TELEMETRY_METADATA_VERSION
+from .utils import JupyterTelemetryException
+
 
 yaml = YAML(typ='safe')
 
@@ -70,8 +72,8 @@ class EventLog(Configurable):
         # We need to initialize the configurable before
         # adding the logging handlers.
         super().__init__(*args, **kwargs)
-        # Use a unique name for the logger so that multiple instances of EventLog do not write
-        # to each other's handlers.
+        # Use a unique name for the logger so that multiple instances
+        # of EventLog do not write to each other's handlers.
         log_name = __name__ + '.' + str(id(self))
         self.log = logging.getLogger(log_name)
         # We don't want events to show up in the default logs
@@ -79,6 +81,8 @@ class EventLog(Configurable):
         # We will use log.info to emit
         self.log.setLevel(logging.INFO)
         self.schemas = {}
+        # Initialize incoming event
+        self._clear_incoming_event()
         # Add each handler to the logger and format the handlers.
         if self.handlers:
             formatter = jsonlogger.JsonFormatter(json_serializer=_skip_message)
@@ -175,23 +179,71 @@ class EventLog(Configurable):
         except KeyError:
             return {"unrestricted"}
 
-    def record_event(self, schema_name, version, event, timestamp_override=None):
+    def get_incoming_event_schema(self):
+        return (
+            self._incoming_event_name,
+            self._incoming_event_version,
+            self._incoming_event_schema
+        )
+
+    def _set_incoming_event(self, schema_name, version):
+        self._incoming_event_name = schema_name
+        self._incoming_event_version = version
+        # Verify that the incoming event is, in fact, a known event.
+        if (schema_name, version) not in self.schemas:
+            raise ValueError('Schema {schema_name} version {version} not registered'.format(
+                schema_name=schema_name, version=version
+            ))
+        self._incoming_event_schema = self.schemas[(schema_name, version)]
+
+    def _clear_incoming_event(self):
+        self._incoming_event_name = None
+        self._incoming_event_version = None
+        self._incoming_event_schema = None
+
+    def record_event(
+            self,
+            schema_name=None,
+            version=None,
+            event=None,
+            timestamp_override=None
+    ):
         """
         Record given event with schema has occurred.
         """
+        # schema_naem and version must both be set...
+        if schema_name and version and event:
+            self._set_incoming_event(schema_name, version)
+        # or neither should be set.
+        elif not schema_name and not version and event:
+            pass
+        elif not event:
+            raise JupyterTelemetryException(
+                "The `event` argument must be given explicitly. Try passing the "
+                "arugment as a keyword arg: `event=<value>`."
+            )
+        else:
+            # Raise the proper exception depending on the situation.
+            if schema_name:
+                raise JupyterTelemetryException(
+                    "`schema_name` was given a value, but `version` was not set. "
+                    "Both arguments must be `None` or not `None."
+                )
+            elif version:
+                raise JupyterTelemetryException(
+                    "`version` was given a value, but `schema_name` was not set. "
+                    "Both arguments must be `None` or not `None."
+                )
+
+        # Get the event schema.
+        schema_name, version, schema = self.get_incoming_event_schema()
+
         if not (self.handlers and schema_name in self.allowed_schemas):
             # if handler isn't set up or schema is not explicitly whitelisted,
             # don't do anything
             return
 
-        if (schema_name, version) not in self.schemas:
-            raise ValueError('Schema {schema_name} version {version} not registered'.format(
-                schema_name=schema_name, version=version
-            ))
-
-        schema = self.schemas[(schema_name, version)]
-
-        # Validate the event data.
+        # # Validate the event data.
         jsonschema.validate(event, schema)
 
         # Generate the empty event capsule.
@@ -228,3 +280,5 @@ class EventLog(Configurable):
                 capsule[property_name] = None
 
         self.log.info(capsule)
+        # Flush the current event.
+        self._clear_incoming_event()
