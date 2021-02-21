@@ -12,9 +12,10 @@ import pytest
 SCHEMA_ID = "test.event"
 VERSION = 1
 
+
 @pytest.fixture
 def schema():
-    return  {
+    return {
         '$id': SCHEMA_ID,
         'title': 'Test Event',
         'version': VERSION,
@@ -103,12 +104,12 @@ def test_missing_categories_label():
     assert 'All properties must have a "categories"' in str(err.value)
 
 
-
 EVENT_DATA = {
     'nothing-exciting': 'hello, world',
     'id': 'test id',
     'email': 'test@testemail.com',
 }
+
 
 @pytest.mark.parametrize(
     'allowed_schemas,expected_output',
@@ -209,12 +210,6 @@ def test_allowed_schemas(schema, allowed_schemas, expected_output):
     )
     e.register_schema(schema)
 
-    event = {
-        'nothing-exciting': 'hello, world',
-        'id': 'test id',
-        'email': 'test@testemail.com',
-    }
-
     # Record event and read output
     e.record_event(SCHEMA_ID, VERSION, EVENT_DATA)
     recorded_event = json.loads(sink.getvalue())
@@ -222,4 +217,3 @@ def test_allowed_schemas(schema, allowed_schemas, expected_output):
 
     # Verify that *exactly* the right properties are recorded.
     assert expected_output == event_data
-
