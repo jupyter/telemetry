@@ -285,3 +285,105 @@ def test_array_category_filtering(allowed_schemas, expected_output):
         allowed_schemas,
         expected_output
     )
+
+
+ADDITIONAL_PROP_EVENT_DATA = {
+    'nothing-exciting': 'hello, world',
+    'user': {
+        'id': 'test id',
+        'email': 'test@testemail.com',
+    },
+    'extra': 1234
+}
+
+
+@pytest.mark.parametrize(
+    'allowed_schemas,expected_output',
+    [
+        (
+            # User configuration for allowed_schemas
+            {SCHEMA_ID: {'allowed_categories': []}},
+            # Expected properties in the recorded event
+            {
+                'nothing-exciting': 'hello, world',
+                'user': None,
+                'extra': None
+            }
+        ),
+        (
+            # User configuration for allowed_schemas
+            {SCHEMA_ID: {'allowed_categories': ['unrestricted']}},
+            # Expected properties in the recorded event
+            {
+                'nothing-exciting': 'hello, world',
+                'user': None,
+                'extra': None
+            }
+        ),
+        (
+            # User configuration for allowed_schemas
+            {SCHEMA_ID: {'allowed_categories': ['user-identifier']}},
+            # Expected properties in the recorded event
+            {
+                'nothing-exciting': 'hello, world',
+                'user': {
+                    'id': 'test id',
+                    'email': None
+                },
+                'extra': None
+            }
+        ),
+        (
+            # User configuration for allowed_schemas
+            {SCHEMA_ID: {'allowed_categories': ['user-identifiable-information']}},
+            # Expected properties in the recorded event
+            {
+                'nothing-exciting': 'hello, world',
+                'user': None,
+                'extra': None
+            }
+        ),
+        (
+            # User configuration for allowed_schemas
+            {
+                SCHEMA_ID: {
+                    'allowed_categories': [
+                        'user-identifier',
+                        'user-identifiable-information'
+                    ]
+                }
+            },
+            # Expected properties in the recorded event
+            {
+                'nothing-exciting': 'hello, world',
+                'user': {
+                    'id': 'test id',
+                    'email': 'test@testemail.com',
+                },
+                'extra': None
+            }
+        ),
+        (
+            # User configuration for allowed_schemas
+            {SCHEMA_ID: {'allowed_properties': ['user']}},
+            # Expected properties in the recorded event
+            {
+                'nothing-exciting': 'hello, world',
+                'user': {
+                    'id': 'test id',
+                    'email': 'test@testemail.com',
+                },
+                'extra': None
+            }
+        ),
+    ]
+)
+def test_no_additional_properties(allowed_schemas, expected_output):
+    run_event_test(
+        ADDITIONAL_PROP_EVENT_DATA,
+        NESTED_CATEGORY_SCHEMA,
+        SCHEMA_ID,
+        VERSION,
+        allowed_schemas,
+        expected_output
+    )

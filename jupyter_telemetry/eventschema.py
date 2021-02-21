@@ -66,8 +66,11 @@ def filter_categories(
 ):
     instance = instance if inplace else deepcopy(instance)
 
-    # Top-level properties without declared categories will be removed
-    instance = {k: v for k, v in instance.items() if (k,) in categories}
+    # Top-level properties without declared categories are set to null
+    for property in instance.keys():
+        path = (property,)
+        if path not in categories:
+            instance[property] = None
 
     # Allow only properties whose categories are included in allowed_categories
     # and whose top-level parent is included in allowed_properties
