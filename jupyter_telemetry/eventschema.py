@@ -72,16 +72,19 @@ def filter_categories(
             categories[path] = ExtractCategories(property, [], message=None)
 
     # Allow only properties whose categories are included in allowed_categories
+    # and whose top-level parent is included in allowed_properties
     not_allowed = (
-        c for c in categories.values()
-        if not set(c.categories).issubset(allowed_categories)
+        c for p, c in categories.items()
+        if not (set(c.categories).issubset(allowed_categories) or
+                p[0] in allowed_properties)
     )
 
     for c in not_allowed:
         # In case both a sub property and its parent, e.g. ['user', 'name'] and
         # ['user'], do not have all the allowed categories and are to be removed,
-        # if the parent is removed first then attempting to remove
-        # the descendent would raise either IndexError or KeyError. Just skip it.
+        # if the parent is removed first then attempting to access
+        # the descendent would either return None or raise an IndexError or
+        # KeyError. Just skip it.
         try:
             item = deep_get(instance, c.absolute_path)
         except IndexError:
@@ -89,14 +92,8 @@ def filter_categories(
         except KeyError:
             continue
 
-        # If a property does not have all the allowed categories, its value is
-        # recorded only if it is a top-level property and explicitly listed in
-        # allowed_properties. Otherwise record it as null.
-        item[c.property] = (
-            item[c.property]
-            if c.property in allowed_properties and not c.absolute_path
-            else None
-        )
+        if item is not None:
+            item[c.property] = None
 
     return instance
 
