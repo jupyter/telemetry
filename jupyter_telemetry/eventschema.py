@@ -42,6 +42,7 @@ def categories_and_validation(validator, instance):
     Split the error stream from validator.iter_errors into ValidationError for
     jsonschema validation and ExtractCategories for category filtering
     """
+    # A dict of ExtractCategories whose keys are pointers to the properties
     categories = dict()
     validation_errors = deque()
 
@@ -65,11 +66,8 @@ def filter_categories(
 ):
     instance = instance if inplace else deepcopy(instance)
 
-    # Top-level properties without declared categories will be given categories []
-    for property in instance.keys():
-        path = (property,)
-        if path not in categories:
-            categories[path] = ExtractCategories(property, [], message=None)
+    # Top-level properties without declared categories will be removed
+    instance = {k: v for k, v in instance.items() if (k,) in categories}
 
     # Allow only properties whose categories are included in allowed_categories
     # and whose top-level parent is included in allowed_properties
