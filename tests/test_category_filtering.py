@@ -128,19 +128,6 @@ EVENT_DATA = {
                 }
             }
         ),
-        (
-            # User configuration for allowed_schemas
-            {
-                SCHEMA_ID: {
-                    'allowed_categories': ['user-identifiable-information'],
-                }
-            },
-            # Expected properties in the recorded event
-            {
-                'nothing-exciting': 'hello, world',
-                'user': None
-            }
-        ),
     ]
 )
 def test_category_filtering(allowed_schemas, expected_output):
@@ -157,6 +144,170 @@ def test_category_filtering(allowed_schemas, expected_output):
 
     # Record event and read output
     e.record_event(SCHEMA_ID, VERSION, EVENT_DATA)
+
+    recorded_event = json.loads(sink.getvalue())
+    event_data = {key: value for key, value in recorded_event.items() if not key.startswith('__')}
+
+    # Verify that *exactly* the right properties are recorded.
+    assert expected_output == event_data
+
+
+NESTED_CATEGORY_ARRAY_SCHEMA = {
+    '$id': SCHEMA_ID,
+    'title': 'Test Event',
+    'version': VERSION,
+    'description': 'Test Event.',
+    'type': 'object',
+    'properties': {
+        'nothing-exciting': {
+            'description': 'a property with nothing exciting happening',
+            'categories': ['unrestricted'],
+            'type': 'string'
+        },
+        'users': {
+            'description': 'user',
+            'categories': ['user-identifier'],
+            'type': 'array',
+            'items': {
+                'properties': {
+                    'email': {
+                        'description': 'email address',
+                        'categories': ['user-identifiable-information'],
+                        'type': 'string'
+                    },
+                    'id': {
+                        'description': 'user ID',
+                        'type': 'string'
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+ARRAY_EVENT_DATA = {
+    'nothing-exciting': 'hello, world',
+    'users': [
+        {
+            'id': 'test id 0',
+            'email': 'test0@testemail.com',
+        },
+        {
+            'id': 'test id 1',
+            'email': 'test1@testemail.com',
+        }
+    ]
+}
+
+
+@pytest.mark.parametrize(
+    'allowed_schemas,expected_output',
+    [
+        (
+            # User configuration for allowed_schemas
+            {SCHEMA_ID: {'allowed_categories': []}},
+            # Expected properties in the recorded event
+            {
+                'nothing-exciting': 'hello, world',
+                'users': None
+            }
+        ),
+        (
+            # User configuration for allowed_schemas
+            {SCHEMA_ID: {'allowed_categories': ['unrestricted']}},
+            # Expected properties in the recorded event
+            {
+                'nothing-exciting': 'hello, world',
+                'users': None
+            }
+        ),
+        (
+            # User configuration for allowed_schemas
+            {SCHEMA_ID: {'allowed_categories': ['user-identifier']}},
+            # Expected properties in the recorded event
+            {
+                'nothing-exciting': 'hello, world',
+                'users': [
+                    {
+                        'id': 'test id 0',
+                        'email': None,
+                    },
+                    {
+                        'id': 'test id 1',
+                        'email': None,
+                    }
+                ]
+            }
+        ),
+        (
+            # User configuration for allowed_schemas
+            {SCHEMA_ID: {'allowed_categories': ['user-identifiable-information']}},
+            # Expected properties in the recorded event
+            {
+                'nothing-exciting': 'hello, world',
+                'users': None
+            }
+        ),
+        (
+            # User configuration for allowed_schemas
+            {
+                SCHEMA_ID: {
+                    'allowed_categories': [
+                        'user-identifier',
+                        'user-identifiable-information'
+                    ]
+                }
+            },
+            # Expected properties in the recorded event
+            {
+                'nothing-exciting': 'hello, world',
+                'users': [
+                    {
+                        'id': 'test id 0',
+                        'email': 'test0@testemail.com',
+                    },
+                    {
+                        'id': 'test id 1',
+                        'email': 'test1@testemail.com',
+                    }
+                ]
+            }
+        ),
+        (
+            # User configuration for allowed_schemas
+            {SCHEMA_ID: {'allowed_properties': ['users']}},
+            # Expected properties in the recorded event
+            {
+                'nothing-exciting': 'hello, world',
+                'users': [
+                    {
+                        'id': 'test id 0',
+                        'email': 'test0@testemail.com',
+                    },
+                    {
+                        'id': 'test id 1',
+                        'email': 'test1@testemail.com',
+                    }
+                ]
+            }
+        ),
+    ]
+)
+def test_array_category_filtering(allowed_schemas, expected_output):
+    sink = io.StringIO()
+
+    # Create a handler that captures+records events with allowed tags.
+    handler = logging.StreamHandler(sink)
+
+    e = EventLog(
+        handlers=[handler],
+        allowed_schemas=allowed_schemas
+    )
+    e.register_schema(NESTED_CATEGORY_ARRAY_SCHEMA)
+
+    # Record event and read output
+    e.record_event(SCHEMA_ID, VERSION, ARRAY_EVENT_DATA)
 
     recorded_event = json.loads(sink.getvalue())
     event_data = {key: value for key, value in recorded_event.items() if not key.startswith('__')}
