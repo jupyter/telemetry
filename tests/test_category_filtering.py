@@ -1,13 +1,6 @@
-import io
-import json
-import logging
-from copy import deepcopy
-from textwrap import dedent as _
-from ruamel.yaml import YAML
-
-from jupyter_telemetry.eventlog import EventLog
-
 import pytest
+
+from .utils import run_event_test
 
 
 SCHEMA_ID = 'test.event'
@@ -46,7 +39,7 @@ NESTED_CATEGORY_SCHEMA = {
 }
 
 
-EVENT_DATA = {
+NESTED_EVENT_DATA = {
     'nothing-exciting': 'hello, world',
     'user': {
         'id': 'test id',
@@ -131,25 +124,14 @@ EVENT_DATA = {
     ]
 )
 def test_category_filtering(allowed_schemas, expected_output):
-    sink = io.StringIO()
-
-    # Create a handler that captures+records events with allowed tags.
-    handler = logging.StreamHandler(sink)
-
-    e = EventLog(
-        handlers=[handler],
-        allowed_schemas=allowed_schemas
+    run_event_test(
+        NESTED_EVENT_DATA,
+        NESTED_CATEGORY_SCHEMA,
+        SCHEMA_ID,
+        VERSION,
+        allowed_schemas,
+        expected_output
     )
-    e.register_schema(NESTED_CATEGORY_SCHEMA)
-
-    # Record event and read output
-    e.record_event(SCHEMA_ID, VERSION, EVENT_DATA)
-
-    recorded_event = json.loads(sink.getvalue())
-    event_data = {key: value for key, value in recorded_event.items() if not key.startswith('__')}
-
-    # Verify that *exactly* the right properties are recorded.
-    assert expected_output == event_data
 
 
 NESTED_CATEGORY_ARRAY_SCHEMA = {
@@ -295,22 +277,11 @@ ARRAY_EVENT_DATA = {
     ]
 )
 def test_array_category_filtering(allowed_schemas, expected_output):
-    sink = io.StringIO()
-
-    # Create a handler that captures+records events with allowed tags.
-    handler = logging.StreamHandler(sink)
-
-    e = EventLog(
-        handlers=[handler],
-        allowed_schemas=allowed_schemas
+    run_event_test(
+        ARRAY_EVENT_DATA,
+        NESTED_CATEGORY_ARRAY_SCHEMA,
+        SCHEMA_ID,
+        VERSION,
+        allowed_schemas,
+        expected_output
     )
-    e.register_schema(NESTED_CATEGORY_ARRAY_SCHEMA)
-
-    # Record event and read output
-    e.record_event(SCHEMA_ID, VERSION, ARRAY_EVENT_DATA)
-
-    recorded_event = json.loads(sink.getvalue())
-    event_data = {key: value for key, value in recorded_event.items() if not key.startswith('__')}
-
-    # Verify that *exactly* the right properties are recorded.
-    assert expected_output == event_data
