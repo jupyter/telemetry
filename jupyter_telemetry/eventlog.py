@@ -209,7 +209,7 @@ class EventLog(Configurable):
             timestamp = datetime.utcnow()
         else:
             timestamp = timestamp_override
-        metadata = {
+        capsule = {
             '__timestamp__': timestamp.isoformat() + 'Z',
             '__schema__': schema_name,
             '__schema_version__': version,
@@ -224,6 +224,6 @@ class EventLog(Configurable):
         filtered_event = filter_categories(
             event, categories, allowed_categories, allowed_properties
         )
-        capsule = {**metadata, **filtered_event}
+        capsule.update(filtered_event)
 
         self.log.info(capsule)
