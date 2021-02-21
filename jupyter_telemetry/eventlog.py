@@ -29,6 +29,13 @@ from traitlets.config import Configurable, Config
 from .traits import Handlers, SchemaOptions
 from . import TELEMETRY_METADATA_VERSION
 
+from .eventschema import (
+    categories_and_validation,
+    extend_with_categories,
+    filter_categories,
+    raise_best_validation_error
+)
+
 yaml = YAML(typ='safe')
 
 
@@ -192,14 +199,17 @@ class EventLog(Configurable):
         schema = self.schemas[(schema_name, version)]
 
         # Validate the event data.
-        jsonschema.validate(event, schema)
+        base_validator_class = jsonschema.validators.validator_for(schema)
+        validator = extend_with_categories(base_validator_class)(schema)
+        categories, errors = categories_and_validation(validator, event)
+        raise_best_validation_error(errors)
 
         # Generate the empty event capsule.
         if timestamp_override is None:
             timestamp = datetime.utcnow()
         else:
             timestamp = timestamp_override
-        capsule = {
+        metadata = {
             '__timestamp__': timestamp.isoformat() + 'Z',
             '__schema__': schema_name,
             '__schema_version__': version,
@@ -211,20 +221,9 @@ class EventLog(Configurable):
         allowed_categories = self.get_allowed_categories(schema_name)
         allowed_properties = self.get_allowed_properties(schema_name)
 
-        # Iterate through the event properties, and only record the
-        # properties labelled with allowed_categories
-        for property_name, data in event.items():
-            prop_categories = schema["properties"][property_name]["categories"]
-            # If the property is explicitly listed in
-            # the allowed_properties, then include it in the capsule
-            if property_name in allowed_properties:
-                capsule[property_name] = data
-            # All of the property categories must be listed in the the allowed
-            # categories for this property to be recorded.
-            elif any([cat in allowed_categories for cat in prop_categories]):
-                capsule[property_name] = data
-            # Else return that property with a value of null
-            else:
-                capsule[property_name] = None
+        filtered_event = filter_categories(
+            event, categories, allowed_categories, allowed_properties
+        )
+        capsule = {**metadata, **filtered_event}
 
         self.log.info(capsule)

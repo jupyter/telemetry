@@ -93,6 +93,7 @@ def test_timestamp_override():
 
     assert event_capsule['__timestamp__'] == timestamp_override.isoformat() + 'Z'
 
+
 def test_record_event():
     """
     Simple test for emitting valid events
@@ -213,7 +214,7 @@ def test_record_event_badschema():
     with pytest.raises(jsonschema.ValidationError):
         el.record_event('test/test', 1, {
             'something': 'blah',
-            'status': 'hi' #'not-in-enum'
+            'status': 'hi'  # 'not-in-enum'
         })
 
 
@@ -229,7 +230,7 @@ def test_unique_logger_instances():
         },
     }
 
-    schema1= {
+    schema1 = {
         '$id': 'test/test1',
         'version': 1,
         'properties': {
