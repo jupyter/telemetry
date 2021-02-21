@@ -100,6 +100,6 @@ def filter_categories(
 
 def deep_get(instance, path):
     result = instance
-    while path:
+    while result is not None and path:
         result = result[path.popleft()]
     return result
