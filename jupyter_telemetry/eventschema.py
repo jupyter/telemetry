@@ -38,31 +38,15 @@ def extend_with_categories(validator_class):
 
 
 JSONSchemaValidator = Draft7Validator
-EventSchemaValidator = extend_with_categories(JSONSchemaValidator)
+CategoryExtractor = extend_with_categories(JSONSchemaValidator)
 
 
-def categories_and_validation(validator, instance):
-    """
-    Split the error stream from validator.iter_errors into ValidationError for
-    jsonschema validation and ExtractCategories for category filtering
-    """
-    # A dict of ExtractCategories whose keys are pointers to the properties
-    categories = dict()
-    validation_errors = deque()
-
-    for e in validator.iter_errors(instance):
-        if isinstance(e, ExtractCategories):
-            categories[tuple(e.absolute_path + deque([e.property]))] = e
-        else:
-            validation_errors.append(e)
-
-    return categories, validation_errors
-
-
-def raise_best_validation_error(validation_errors):
-    error = best_match(validation_errors)
-    if error is not None:
-        raise error
+def extract_categories(instance, schema):
+    return {
+        tuple(c.absolute_path + deque([c.property])): c
+        for c in CategoryExtractor(schema).iter_errors(instance)
+        if isinstance(c, ExtractCategories)
+    }
 
 
 def filter_categories(

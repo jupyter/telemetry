@@ -30,10 +30,8 @@ from . import TELEMETRY_METADATA_VERSION
 
 from .eventschema import (
     JSONSchemaValidator,
-    EventSchemaValidator,
-    categories_and_validation,
-    filter_categories,
-    raise_best_validation_error
+    extract_categories,
+    filter_categories
 )
 
 yaml = YAML(typ='safe')
@@ -199,9 +197,7 @@ class EventLog(Configurable):
         schema = self.schemas[(schema_name, version)]
 
         # Validate the event data.
-        validator = EventSchemaValidator(schema)
-        categories, errors = categories_and_validation(validator, event)
-        raise_best_validation_error(errors)
+        JSONSchemaValidator(schema).validate(event)
 
         # Generate the empty event capsule.
         if timestamp_override is None:
@@ -220,6 +216,7 @@ class EventLog(Configurable):
         allowed_categories = self.get_allowed_categories(schema_name)
         allowed_properties = self.get_allowed_properties(schema_name)
 
+        categories = extract_categories(event, schema)
         filtered_event = filter_categories(
             event, categories, allowed_categories, allowed_properties
         )
