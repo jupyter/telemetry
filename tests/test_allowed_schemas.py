@@ -5,7 +5,7 @@ from jupyter_telemetry.eventlog import EventLog
 
 import pytest
 
-from .utils import run_event_test
+from .utils import get_event_data
 
 
 SCHEMA_ID = "test.event"
@@ -198,11 +198,13 @@ EVENT_DATA = {
     ]
 )
 def test_allowed_schemas(schema, allowed_schemas, expected_output):
-    run_event_test(
+    event_data = get_event_data(
         EVENT_DATA,
         schema,
         SCHEMA_ID,
         VERSION,
-        allowed_schemas,
-        expected_output
+        allowed_schemas
     )
+
+    # Verify that *exactly* the right properties are recorded.
+    assert expected_output == event_data

@@ -1,6 +1,6 @@
 import pytest
 
-from .utils import run_event_test
+from .utils import get_event_data
 
 
 SCHEMA_ID = 'test.event'
@@ -124,14 +124,16 @@ NESTED_EVENT_DATA = {
     ]
 )
 def test_category_filtering(allowed_schemas, expected_output):
-    run_event_test(
+    event_data = get_event_data(
         NESTED_EVENT_DATA,
         NESTED_CATEGORY_SCHEMA,
         SCHEMA_ID,
         VERSION,
-        allowed_schemas,
-        expected_output
+        allowed_schemas
     )
+
+    # Verify that *exactly* the right properties are recorded.
+    assert expected_output == event_data
 
 
 NESTED_CATEGORY_ARRAY_SCHEMA = {
@@ -277,14 +279,16 @@ ARRAY_EVENT_DATA = {
     ]
 )
 def test_array_category_filtering(allowed_schemas, expected_output):
-    run_event_test(
+    event_data = get_event_data(
         ARRAY_EVENT_DATA,
         NESTED_CATEGORY_ARRAY_SCHEMA,
         SCHEMA_ID,
         VERSION,
-        allowed_schemas,
-        expected_output
+        allowed_schemas
     )
+
+    # Verify that *exactly* the right properties are recorded.
+    assert expected_output == event_data
 
 
 ADDITIONAL_PROP_EVENT_DATA = {
@@ -379,11 +383,13 @@ ADDITIONAL_PROP_EVENT_DATA = {
     ]
 )
 def test_no_additional_properties(allowed_schemas, expected_output):
-    run_event_test(
+    event_data = get_event_data(
         ADDITIONAL_PROP_EVENT_DATA,
         NESTED_CATEGORY_SCHEMA,
         SCHEMA_ID,
         VERSION,
-        allowed_schemas,
-        expected_output
+        allowed_schemas
     )
+
+    # Verify that *exactly* the right properties are recorded.
+    assert expected_output == event_data
