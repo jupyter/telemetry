@@ -1,7 +1,7 @@
 from collections import deque
 from copy import deepcopy
 
-from jsonschema import validators
+from jsonschema import Draft7Validator, validators
 from jsonschema.exceptions import ValidationError, best_match
 
 
@@ -35,6 +35,10 @@ def extend_with_categories(validator_class):
     return validators.extend(
         validator_class, {"properties": get_categories},
     )
+
+
+JSONSchemaValidator = Draft7Validator
+EventSchemaValidator = extend_with_categories(JSONSchemaValidator)
 
 
 def categories_and_validation(validator, instance):

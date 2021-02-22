@@ -5,7 +5,6 @@ import json
 import logging
 from datetime import datetime
 
-import jsonschema
 from pythonjsonlogger import jsonlogger
 try:
     from ruamel.yaml import YAML
@@ -30,8 +29,9 @@ from .traits import Handlers, SchemaOptions
 from . import TELEMETRY_METADATA_VERSION
 
 from .eventschema import (
+    JSONSchemaValidator,
+    EventSchemaValidator,
     categories_and_validation,
-    extend_with_categories,
     filter_categories,
     raise_best_validation_error
 )
@@ -128,7 +128,7 @@ class EventLog(Configurable):
         """
         # Check if our schema itself is valid
         # This throws an exception if it isn't valid
-        jsonschema.validators.validator_for(schema).check_schema(schema)
+        JSONSchemaValidator.check_schema(schema)
 
         # Check that the properties we require are present
         required_schema_fields = {'$id', 'version', 'properties'}
@@ -199,8 +199,7 @@ class EventLog(Configurable):
         schema = self.schemas[(schema_name, version)]
 
         # Validate the event data.
-        base_validator_class = jsonschema.validators.validator_for(schema)
-        validator = extend_with_categories(base_validator_class)(schema)
+        validator = EventSchemaValidator(schema)
         categories, errors = categories_and_validation(validator, event)
         raise_best_validation_error(errors)
 
