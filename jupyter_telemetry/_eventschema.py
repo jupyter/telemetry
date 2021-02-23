@@ -2,7 +2,7 @@ from collections import deque
 from copy import deepcopy
 
 from jsonschema import Draft7Validator, validators
-from jsonschema.exceptions import ValidationError, best_match
+from jsonschema.exceptions import ValidationError
 
 
 class ExtractCategories(ValidationError):
@@ -12,7 +12,6 @@ class ExtractCategories(ValidationError):
         self.categories = categories
 
 
-# Based on https://python-jsonschema.readthedocs.io/en/stable/faq/#why-doesn-t-my-schema-s-default-property-set-the-default-on-my-instance
 def extend_with_categories(validator_class):
     """
     Extend the validator class so that during json schema validation, whenever
