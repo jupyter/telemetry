@@ -28,7 +28,7 @@ from traitlets.config import Configurable, Config
 from .traits import Handlers, SchemaOptions
 from . import TELEMETRY_METADATA_VERSION
 
-from .eventschema import (
+from ._eventschema import (
     JSONSchemaValidator,
     extract_categories,
     filter_categories
