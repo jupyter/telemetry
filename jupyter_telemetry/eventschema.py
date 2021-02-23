@@ -41,11 +41,33 @@ JSONSchemaValidator = Draft7Validator
 CategoryExtractor = extend_with_categories(JSONSchemaValidator)
 
 
+# Ignore categories under any of these jsonschema keywords
+IGNORE_CATEGORIES_SCHEMA_KEYWORDS = {
+    'if', 'not', 'anyOf', 'oneOf', 'then', 'else'
+}
+
+
+def extract_categories_from_errors(errors):
+    for e in errors:
+        if (
+            isinstance(e, ExtractCategories) and
+            not any(p in IGNORE_CATEGORIES_SCHEMA_KEYWORDS
+                    for p in e.absolute_schema_path)
+        ):
+            yield e
+        else:
+            yield from extract_categories_from_errors(e.context)
+
+
 def extract_categories(instance, schema):
+    """
+    Generate dict of ExtractCategories whose keys are pointers to the properties
+    """
     return {
         tuple(c.absolute_path + deque([c.property])): c
-        for c in CategoryExtractor(schema).iter_errors(instance)
-        if isinstance(c, ExtractCategories)
+        for c in extract_categories_from_errors(
+            CategoryExtractor(schema).iter_errors(instance)
+        )
     }
 
 
