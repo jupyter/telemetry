@@ -103,21 +103,39 @@ class EventLog(Configurable):
         eventlog_cfg = Config({"EventLog": my_cfg})
         super(EventLog, self)._load_config(eventlog_cfg, section_names=None, traits=None)
 
-    def register_schema_file(self, filename):
+    def register_schema_file(self, filename, duplicate='raise'):
         """
         Convenience function for registering a JSON schema from a filepath
 
         Supports both JSON & YAML files.
+
+        Parameters
+        ----------
+        filename: str or path object
+            Path to the schema file to register.
+        duplicate : {'raise', 'allow', 'skip'} (default: 'raise')
+            Specify how to handle a schema whose `$id` is the same as the `$id` of another schema which has already been registered.
+            'raise': raise a `ValueError`.
+            'allow': If the input schema has the same `$id` and version as another schema that has already been registered, it would override the existing schema. In case the input schema only has the same `$id` as an existing schema but a different version, the input schema would be registered along side the existing schema.
+            'skip': does nothing.
         """
         # Just use YAML loader for everything, since all valid JSON is valid YAML
         with open(filename) as f:
-            self.register_schema(yaml.load(f))
+            self.register_schema(yaml.load(f), duplicate)
 
-    def register_schema(self, schema):
+    def register_schema(self, schema, duplicate='raise'):
         """
         Register a given JSON Schema with this event emitter
 
-        'version' and '$id' are required fields.
+        Parameters:
+        ----------
+        schema: dict
+            The schema to register. 'version' and '$id' are required fields.
+        duplicate : {'raise', 'allow', 'skip'} (default: 'raise')
+            Specify how to handle a schema whose `$id` is the same as the `$id` of another schema which has already been registered.
+            'raise': raise a `ValueError`.
+            'allow': If the input schema has the same `$id` and version as another schema that has already been registered, it would override the existing schema. In case the input schema only has the same `$id` as an existing schema but a different version, the input schema would be registered along side the existing schema.
+            'skip': does nothing.
         """
         # Check if our schema itself is valid
         # This throws an exception if it isn't valid
@@ -130,6 +148,21 @@ class EventLog(Configurable):
                 raise ValueError(
                     '{} is required in schema specification'.format(rsf)
                 )
+
+        duplicate_options = {'raise', 'allow', 'skip'}
+        if duplicate not in duplicate_options:
+            raise ValueError(
+                '`duplicate` has to be one of {}'.format(duplicate_options)
+            )
+
+        is_duplicate = any(schema['$id'] == i for (i, _) in self.schemas.keys())
+        if is_duplicate:
+            if duplicate == 'raise':
+                raise ValueError(
+                    'Schema {} has already been registered'.format(schema['$id'])
+                )
+            elif duplicate == 'skip':
+                return
 
         for p, attrs in schema['properties'].items():
             if p.startswith('__'):
