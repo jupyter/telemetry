@@ -93,6 +93,7 @@ def test_timestamp_override():
 
     assert event_capsule['__timestamp__'] == timestamp_override.isoformat() + 'Z'
 
+
 def test_record_event():
     """
     Simple test for emitting valid events
@@ -158,6 +159,33 @@ def test_register_schema_file(tmp_path):
     assert schema in el.schemas.values()
 
 
+def test_register_schema_file_object(tmp_path):
+    """
+    Register schema from a file
+    """
+    schema = {
+        '$id': 'test/test',
+        'version': 1,
+        'properties': {
+            'something': {
+                'type': 'string',
+                'categories': ['unrestricted']
+            },
+        },
+    }
+
+    el = EventLog()
+
+    yaml = YAML(typ='safe')
+
+    schema_file = tmp_path.joinpath("schema.yml")
+    yaml.dump(schema, schema_file)
+    with open(schema_file, 'r') as f:
+        el.register_schema_file(f)
+
+    assert schema in el.schemas.values()
+
+
 def test_allowed_schemas():
     """
     Events should be emitted only if their schemas are allowed
@@ -213,7 +241,7 @@ def test_record_event_badschema():
     with pytest.raises(jsonschema.ValidationError):
         el.record_event('test/test', 1, {
             'something': 'blah',
-            'status': 'hi' #'not-in-enum'
+            'status': 'hi'  # 'not-in-enum'
         })
 
 
@@ -229,7 +257,7 @@ def test_unique_logger_instances():
         },
     }
 
-    schema1= {
+    schema1 = {
         '$id': 'test/test1',
         'version': 1,
         'properties': {

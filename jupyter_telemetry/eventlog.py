@@ -111,8 +111,8 @@ class EventLog(Configurable):
 
         Parameters
         ----------
-        filename: str or path object
-            Path to the schema file to register.
+        filename: str, path object or file-like object
+            Path to the schema file or a file object to register.
         duplicate : {'raise', 'allow', 'skip'} (default: 'raise')
             Specify how to handle a schema whose `$id` is the same as the `$id` of another schema which has already been registered.
             'raise': raise a `ValueError`.
@@ -120,8 +120,13 @@ class EventLog(Configurable):
             'skip': does nothing.
         """
         # Just use YAML loader for everything, since all valid JSON is valid YAML
-        with open(filename) as f:
-            self.register_schema(yaml.load(f), duplicate)
+
+        # check if input is a file-like object
+        if hasattr(filename, 'read') and hasattr(filename, 'write'):
+            self.register_schema(yaml.load(filename), duplicate)
+        else:
+            with open(filename) as f:
+                self.register_schema(yaml.load(f), duplicate)
 
     def register_schema(self, schema, duplicate='raise'):
         """
