@@ -108,10 +108,20 @@ class EventLog(Configurable):
         Convenience function for registering a JSON schema from a filepath
 
         Supports both JSON & YAML files.
+
+        Parameters
+        ----------
+        filename: str, path object or file-like object
+            Path to the schema file or a file object to register.
         """
         # Just use YAML loader for everything, since all valid JSON is valid YAML
-        with open(filename) as f:
-            self.register_schema(yaml.load(f))
+
+        # check if input is a file-like object
+        if hasattr(filename, 'read') and hasattr(filename, 'write'):
+            self.register_schema(yaml.load(filename))
+        else:
+            with open(filename) as f:
+                self.register_schema(yaml.load(f))
 
     def register_schema(self, schema):
         """
@@ -130,6 +140,13 @@ class EventLog(Configurable):
                 raise ValueError(
                     '{} is required in schema specification'.format(rsf)
                 )
+
+        if (schema['$id'], schema['version']) in self.schemas:
+            raise ValueError(
+                'Schema {} version {} has already been registered.'.format(
+                    schema['$id'], schema['version']
+                )
+            )
 
         for p, attrs in schema['properties'].items():
             if p.startswith('__'):
