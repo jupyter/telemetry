@@ -313,3 +313,32 @@ def test_unique_logger_instances():
         '__metadata_version__': 1,
         'something': 'blah'
     }
+
+
+def test_register_duplicate_schemas():
+    schema0 = {
+        '$id': 'test/test',
+        'version': 1,
+        'properties': {
+            'something': {
+                'type': 'string',
+                'categories': ['unrestricted']
+            },
+        },
+    }
+
+    schema1 = {
+        '$id': 'test/test',
+        'version': 1,
+        'properties': {
+            'somethingelse': {
+                'type': 'string',
+                'categories': ['unrestricted']
+            },
+        },
+    }
+
+    el = EventLog()
+    el.register_schema(schema0)
+    with pytest.raises(ValueError):
+        el.register_schema(schema1)
