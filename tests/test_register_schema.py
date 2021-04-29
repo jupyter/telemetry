@@ -180,7 +180,7 @@ def test_register_schema_file_object(tmp_path):
 
     schema_file = tmp_path.joinpath("schema.yml")
     yaml.dump(schema, schema_file)
-    with open(schema_file, 'r') as f:
+    with open(str(schema_file), 'r') as f:
         el.register_schema_file(f)
 
     assert schema in el.schemas.values()
