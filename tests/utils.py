@@ -1,3 +1,4 @@
+from copy import deepcopy
 import io
 import json
 import logging
@@ -18,7 +19,7 @@ def get_event_data(event, schema, schema_id, version, allowed_schemas):
     e.register_schema(schema)
 
     # Record event and read output
-    e.record_event(schema_id, version, event)
+    e.record_event(schema_id, version, deepcopy(event))
 
     recorded_event = json.loads(sink.getvalue())
     return {key: value for key, value in recorded_event.items() if not key.startswith('__')}

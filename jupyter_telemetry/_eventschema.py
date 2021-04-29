@@ -70,11 +70,7 @@ def extract_categories(instance, schema):
     }
 
 
-def filter_categories(
-    instance, categories, allowed_categories, allowed_properties, inplace=False
-):
-    instance = instance if inplace else deepcopy(instance)
-
+def filter_categories(instance, categories, allowed_categories, allowed_properties):
     # Top-level properties without declared categories are set to null
     for property in instance.keys():
         path = (property,)
