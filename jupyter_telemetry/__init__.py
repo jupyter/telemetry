@@ -4,3 +4,4 @@ TELEMETRY_METADATA_VERSION = 1
 
 
 from .eventlog import EventLog  # noqa
+from .utils import event_schema
