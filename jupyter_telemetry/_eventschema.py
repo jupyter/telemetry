@@ -1,5 +1,4 @@
 from collections import deque
-from copy import deepcopy
 
 from jsonschema import Draft7Validator, validators
 from jsonschema.exceptions import ValidationError
