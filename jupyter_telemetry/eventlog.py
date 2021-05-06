@@ -195,6 +195,22 @@ class EventLog(Configurable):
     def record_event(self, schema_name, version, event, timestamp_override=None):
         """
         Record given event with schema has occurred.
+
+        Parameters
+        ----------
+        schema_name: str
+            Name of the schema
+        version: str
+            The schema version
+        event: dict
+            The event to record
+        timestamp_override: datetime, optional
+            Optionally override the event timestamp. By default it is set to the current timestamp.
+
+        Returns
+        -------
+        dict
+            The recorded event data
         """
         if not (self.handlers and schema_name in self.allowed_schemas):
             # if handler isn't set up or schema is not explicitly whitelisted,
@@ -245,3 +261,4 @@ class EventLog(Configurable):
                 capsule[property_name] = None
 
         self.log.info(capsule)
+        return capsule
