@@ -245,3 +245,4 @@ class EventLog(Configurable):
                 capsule[property_name] = None
 
         self.log.info(capsule)
+        return capsule
