@@ -24,13 +24,13 @@ def test_register_invalid_schema(json_validator):
         })
 
 
-def test_missing_required_properties():
+def test_missing_required_properties(json_validator):
     """
     id and $version are required properties in our schemas.
 
     They aren't required by JSON Schema itself
     """
-    el = EventLog()
+    el = EventLog(json_validator=json_validator)
     with pytest.raises(ValueError):
         el.register_schema({
             'properties': {}
@@ -43,13 +43,13 @@ def test_missing_required_properties():
         })
 
 
-def test_reserved_properties():
+def test_reserved_properties(json_validator):
     """
     User schemas can't have properties starting with __
 
     These are reserved
     """
-    el = EventLog()
+    el = EventLog(json_validator=json_validator)
     with pytest.raises(ValueError):
         el.register_schema({
             '$id': 'test/test',
@@ -63,7 +63,7 @@ def test_reserved_properties():
         })
 
 
-def test_timestamp_override():
+def test_timestamp_override(json_validator):
     """
     Simple test for overriding timestamp
     """
@@ -80,7 +80,7 @@ def test_timestamp_override():
 
     output = io.StringIO()
     handler = logging.StreamHandler(output)
-    el = EventLog(handlers=[handler])
+    el = EventLog(handlers=[handler], json_validator=json_validator)
     el.register_schema(schema)
     el.allowed_schemas = ['test/test']
 
@@ -95,7 +95,7 @@ def test_timestamp_override():
     assert event_capsule['__timestamp__'] == timestamp_override.isoformat() + 'Z'
 
 
-def test_record_event():
+def test_record_event(json_validator):
     """
     Simple test for emitting valid events
     """
@@ -112,7 +112,7 @@ def test_record_event():
 
     output = io.StringIO()
     handler = logging.StreamHandler(output)
-    el = EventLog(handlers=[handler])
+    el = EventLog(handlers=[handler], json_validator=json_validator)
     el.register_schema(schema)
     el.allowed_schemas = ['test/test']
 
@@ -134,7 +134,7 @@ def test_record_event():
     }
 
 
-def test_register_schema_file(tmp_path):
+def test_register_schema_file(tmp_path, json_validator):
     """
     Register schema from a file
     """
@@ -149,7 +149,7 @@ def test_register_schema_file(tmp_path):
         },
     }
 
-    el = EventLog()
+    el = EventLog(json_validator=json_validator)
 
     yaml = YAML(typ='safe')
 
@@ -160,7 +160,7 @@ def test_register_schema_file(tmp_path):
     assert schema in (s.schema for s in el.schemas.values())
 
 
-def test_register_schema_file_object(tmp_path):
+def test_register_schema_file_object(tmp_path, json_validator):
     """
     Register schema from a file
     """
@@ -175,7 +175,7 @@ def test_register_schema_file_object(tmp_path):
         },
     }
 
-    el = EventLog()
+    el = EventLog(json_validator=json_validator)
 
     yaml = YAML(typ='safe')
 
@@ -187,7 +187,7 @@ def test_register_schema_file_object(tmp_path):
     assert schema in (s.schema for s in el.schemas.values())
 
 
-def test_allowed_schemas():
+def test_allowed_schemas(json_validator):
     """
     Events should be emitted only if their schemas are allowed
     """
@@ -204,7 +204,7 @@ def test_allowed_schemas():
 
     output = io.StringIO()
     handler = logging.StreamHandler(output)
-    el = EventLog(handlers=[handler])
+    el = EventLog(handlers=[handler], json_validator=json_validator)
     # Just register schema, but do not mark it as allowed
     el.register_schema(schema)
 
@@ -216,7 +216,7 @@ def test_allowed_schemas():
     assert output.getvalue() == ''
 
 
-def test_record_event_badschema():
+def test_record_event_badschema(json_validator):
     """
     Fail fast when an event doesn't conform to its schema
     """
@@ -246,7 +246,7 @@ def test_record_event_badschema():
         })
 
 
-def test_unique_logger_instances():
+def test_unique_logger_instances(json_validator):
     schema0 = {
         '$id': 'test/test0',
         'version': 1,
@@ -274,7 +274,7 @@ def test_unique_logger_instances():
     handler0 = logging.StreamHandler(output0)
     handler1 = logging.StreamHandler(output1)
 
-    el0 = EventLog(handlers=[handler0])
+    el0 = EventLog(handlers=[handler0], json_validator=json_validator)
     el0.register_schema(schema0)
     el0.allowed_schemas = ['test/test0']
 
@@ -316,7 +316,7 @@ def test_unique_logger_instances():
     }
 
 
-def test_register_duplicate_schemas():
+def test_register_duplicate_schemas(json_validator):
     schema0 = {
         '$id': 'test/test',
         'version': 1,
@@ -339,7 +339,7 @@ def test_register_duplicate_schemas():
         },
     }
 
-    el = EventLog()
+    el = EventLog(json_validator=json_validator)
     el.register_schema(schema0)
     with pytest.raises(ValueError):
         el.register_schema(schema1)

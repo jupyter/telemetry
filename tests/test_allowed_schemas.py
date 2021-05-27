@@ -12,9 +12,10 @@ import pytest
 SCHEMA_ID = "test.event"
 VERSION = 1
 
+
 @pytest.fixture
 def schema():
-    return  {
+    return {
         '$id': SCHEMA_ID,
         'title': 'Test Event',
         'version': VERSION,
@@ -40,7 +41,7 @@ def schema():
     }
 
 
-def test_raised_exception_for_nonlist_categories():
+def test_raised_exception_for_nonlist_categories(json_validator):
     # Bad schema in yaml form.
     yaml_schema = _("""\
     $id: test.schema
@@ -63,6 +64,7 @@ def test_raised_exception_for_nonlist_categories():
                 "allowed_categories": ["user-identifier"]
             }
         },
+        json_validator=json_validator
     )
 
     # This schema does not have categories as a list.
@@ -72,7 +74,7 @@ def test_raised_exception_for_nonlist_categories():
     assert 'must be a list.' in str(err.value)
 
 
-def test_missing_categories_label():
+def test_missing_categories_label(json_validator):
     # Bad schema in yaml form.
     yaml_schema = _("""\
     $id: test.schema
@@ -93,7 +95,8 @@ def test_missing_categories_label():
             SCHEMA_ID: {
                 "allowed_categories": ["random-category"]
             }
-        }
+        },
+        json_validator=json_validator
     )
 
     # This schema does not have categories as a list.
@@ -103,12 +106,12 @@ def test_missing_categories_label():
     assert 'All properties must have a "categories"' in str(err.value)
 
 
-
 EVENT_DATA = {
     'nothing-exciting': 'hello, world',
     'id': 'test id',
     'email': 'test@testemail.com',
 }
+
 
 @pytest.mark.parametrize(
     'allowed_schemas,expected_output',
@@ -197,7 +200,7 @@ EVENT_DATA = {
         ),
     ]
 )
-def test_allowed_schemas(schema, allowed_schemas, expected_output):
+def test_allowed_schemas(json_validator, schema, allowed_schemas, expected_output):
     sink = io.StringIO()
 
     # Create a handler that captures+records events with allowed tags.
@@ -205,7 +208,8 @@ def test_allowed_schemas(schema, allowed_schemas, expected_output):
 
     e = EventLog(
         handlers=[handler],
-        allowed_schemas=allowed_schemas
+        allowed_schemas=allowed_schemas,
+        json_validator=json_validator
     )
     e.register_schema(schema)
 
@@ -222,4 +226,3 @@ def test_allowed_schemas(schema, allowed_schemas, expected_output):
 
     # Verify that *exactly* the right properties are recorded.
     assert expected_output == event_data
-
