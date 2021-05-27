@@ -96,7 +96,7 @@ class EventLog(Configurable):
             for handler in self.handlers:
                 handler.setFormatter(formatter)
                 self.log.addHandler(handler)
-        self.json_validator_cls = JSON_SCHEMA_VALIDATORS[self.json_validator]
+        self.json_validator_cls = JSON_SCHEMA_VALIDATORS[self.json_validator.lower()]
 
     def _load_config(self, cfg, section_names=None, traits=None):
         """Load EventLog traits from a Config object, patching the
