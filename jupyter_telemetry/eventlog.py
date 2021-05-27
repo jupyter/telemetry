@@ -5,7 +5,6 @@ import json
 import logging
 from datetime import datetime
 
-import jsonschema
 from pythonjsonlogger import jsonlogger
 try:
     from ruamel.yaml import YAML
