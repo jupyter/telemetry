@@ -9,14 +9,15 @@ import pytest
 from ruamel.yaml import YAML
 
 from jupyter_telemetry.eventlog import EventLog
+from jupyter_telemetry.eventschema import JSONSchemaError, JSONValidationError
 
 
-def test_register_invalid_schema():
+def test_register_invalid_schema(json_validator):
     """
     Invalid JSON Schemas should fail registration
     """
-    el = EventLog()
-    with pytest.raises(jsonschema.SchemaError):
+    el = EventLog(json_validator=json_validator)
+    with pytest.raises(JSONSchemaError):
         el.register_schema({
             # Totally invalid
             'properties': True
@@ -156,7 +157,7 @@ def test_register_schema_file(tmp_path):
     yaml.dump(schema, schema_file)
     el.register_schema_file(str(schema_file))
 
-    assert schema in el.schemas.values()
+    assert schema in (s.schema for s in el.schemas.values())
 
 
 def test_register_schema_file_object(tmp_path):
@@ -183,7 +184,7 @@ def test_register_schema_file_object(tmp_path):
     with open(str(schema_file), 'r') as f:
         el.register_schema_file(f)
 
-    assert schema in el.schemas.values()
+    assert schema in (s.schema for s in el.schemas.values())
 
 
 def test_allowed_schemas():
@@ -238,7 +239,7 @@ def test_record_event_badschema():
     el.register_schema(schema)
     el.allowed_schemas = ['test/test']
 
-    with pytest.raises(jsonschema.ValidationError):
+    with pytest.raises(JSONValidationError):
         el.record_event('test/test', 1, {
             'something': 'blah',
             'status': 'hi'  # 'not-in-enum'

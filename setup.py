@@ -43,6 +43,7 @@ setup(
         'jsonschema',
         'python-json-logger',
         'traitlets',
-        'ruamel.yaml'
+        'ruamel.yaml',
+        'fastjsonschema'
     ],
 )

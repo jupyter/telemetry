@@ -62,8 +62,8 @@ class SchemaOptions(TraitType):
                     raise TraitError(
                         "The schema option, {schema_name}, includes "
                         "unknown key(s): {unknown_keys}".format(
-                           schema_name=schema_name,
-                           unknown_keys=",".join(unknown_keys)
+                            schema_name=schema_name,
+                            unknown_keys=",".join(unknown_keys)
                         )
                     )
             validated_val = val

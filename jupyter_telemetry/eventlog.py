@@ -24,8 +24,10 @@ except ImportError as e:
         # conda install the 'real' ruamel.yaml to fix
         raise ImportError("Missing dependency ruamel.yaml. Try: `conda install ruamel.yaml`")
 
+from traitlets import CaselessStrEnum
 from traitlets.config import Configurable, Config
 
+from .eventschema import EventSchema, JSON_SCHEMA_VALIDATORS
 from .traits import Handlers, SchemaOptions
 from . import TELEMETRY_METADATA_VERSION
 
@@ -66,6 +68,16 @@ class EventLog(Configurable):
         """
     ).tag(config=True)
 
+    json_validator = CaselessStrEnum(
+        JSON_SCHEMA_VALIDATORS.keys(),
+        'fastjsonschema',
+        help="""
+        JSON schema validation implementation.
+
+        Valid choices are `jsonschema` and `fastjsonschema`.
+        """
+    ).tag(allowed_none=False)
+
     def __init__(self, *args, **kwargs):
         # We need to initialize the configurable before
         # adding the logging handlers.
@@ -85,6 +97,7 @@ class EventLog(Configurable):
             for handler in self.handlers:
                 handler.setFormatter(formatter)
                 self.log.addHandler(handler)
+        self.json_validator_cls = JSON_SCHEMA_VALIDATORS[self.json_validator]
 
     def _load_config(self, cfg, section_names=None, traits=None):
         """Load EventLog traits from a Config object, patching the
@@ -131,7 +144,7 @@ class EventLog(Configurable):
         """
         # Check if our schema itself is valid
         # This throws an exception if it isn't valid
-        jsonschema.validators.validator_for(schema).check_schema(schema)
+        event_schema = EventSchema(schema, validator_cls=self.json_validator_cls)
 
         # Check that the properties we require are present
         required_schema_fields = {'$id', 'version', 'properties'}
@@ -169,7 +182,7 @@ class EventLog(Configurable):
                     'have a category field.'.format(p)
                 )
 
-        self.schemas[(schema['$id'], schema['version'])] = schema
+        self.schemas[(schema['$id'], schema['version'])] = event_schema
 
     def get_allowed_properties(self, schema_name):
         """Get the allowed properties for an allowed schema."""
@@ -222,10 +235,11 @@ class EventLog(Configurable):
                 schema_name=schema_name, version=version
             ))
 
-        schema = self.schemas[(schema_name, version)]
+        event_schema = self.schemas[(schema_name, version)]
+        schema = event_schema.schema
 
         # Validate the event data.
-        jsonschema.validate(event, schema)
+        event_schema.validate(event)
 
         # Generate the empty event capsule.
         if timestamp_override is None:
