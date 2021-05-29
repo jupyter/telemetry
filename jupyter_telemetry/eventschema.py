@@ -33,32 +33,30 @@ class JSONSchemaValidator(EventSchemaValidator):
 
         try:
             ivalidator.check_schema(schema)
-        except jsonschema.SchemaError as e:
-            raise JSONSchemaError(e.message) from e
+        except Exception as e:
+            raise JSONSchemaError from e
 
         self._validator = ivalidator(schema)
 
     def validate(self, instance):
         try:
             self._validator.validate(instance)
-        except jsonschema.ValidationError as e:
-            raise JSONValidationError(e.message) from e
+        except Exception as e:
+            raise JSONValidationError from e
 
 
 class FastJSONSchemaValidator(EventSchemaValidator):
     def __init__(self, schema):
         try:
             self._validate = fastjsonschema.compile(schema)
-        except fastjsonschema.JsonSchemaDefinitionException as e:
-            raise JSONSchemaError(e.message) from e
         except Exception as e:
             raise JSONSchemaError from e
 
     def validate(self, instance):
         try:
             self._validate(instance)
-        except fastjsonschema.JsonSchemaException as e:
-            raise JSONValidationError(e.message) from e
+        except Exception as e:
+            raise JSONValidationError from e
 
 
 JSON_SCHEMA_VALIDATORS = {
