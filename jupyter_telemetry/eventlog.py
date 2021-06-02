@@ -5,7 +5,6 @@ import json
 import logging
 from datetime import datetime
 
-import jsonschema
 from pythonjsonlogger import jsonlogger
 try:
     from ruamel.yaml import YAML
@@ -28,6 +27,8 @@ from traitlets.config import Configurable, Config
 
 from .traits import Handlers, SchemaOptions
 from . import TELEMETRY_METADATA_VERSION
+
+from .categories import JSONSchemaValidator, filter_categories_from_event
 
 yaml = YAML(typ='safe')
 
@@ -131,7 +132,7 @@ class EventLog(Configurable):
         """
         # Check if our schema itself is valid
         # This throws an exception if it isn't valid
-        jsonschema.validators.validator_for(schema).check_schema(schema)
+        JSONSchemaValidator.check_schema(schema)
 
         # Check that the properties we require are present
         required_schema_fields = {'$id', 'version', 'properties'}
@@ -225,7 +226,7 @@ class EventLog(Configurable):
         schema = self.schemas[(schema_name, version)]
 
         # Validate the event data.
-        jsonschema.validate(event, schema)
+        JSONSchemaValidator(schema).validate(event)
 
         # Generate the empty event capsule.
         if timestamp_override is None:
@@ -244,21 +245,10 @@ class EventLog(Configurable):
         allowed_categories = self.get_allowed_categories(schema_name)
         allowed_properties = self.get_allowed_properties(schema_name)
 
-        # Iterate through the event properties, and only record the
-        # properties labelled with allowed_categories
-        for property_name, data in event.items():
-            prop_categories = schema["properties"][property_name]["categories"]
-            # If the property is explicitly listed in
-            # the allowed_properties, then include it in the capsule
-            if property_name in allowed_properties:
-                capsule[property_name] = data
-            # All of the property categories must be listed in the the allowed
-            # categories for this property to be recorded.
-            elif any([cat in allowed_categories for cat in prop_categories]):
-                capsule[property_name] = data
-            # Else return that property with a value of null
-            else:
-                capsule[property_name] = None
+        filtered_event = filter_categories_from_event(
+            event, schema, allowed_categories, allowed_properties
+        )
+        capsule.update(filtered_event)
 
         self.log.info(capsule)
         return capsule
