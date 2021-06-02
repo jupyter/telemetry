@@ -28,11 +28,7 @@ from traitlets.config import Configurable, Config
 from .traits import Handlers, SchemaOptions
 from . import TELEMETRY_METADATA_VERSION
 
-from ._eventschema import (
-    JSONSchemaValidator,
-    extract_categories,
-    filter_categories
-)
+from .categories import JSONSchemaValidator, filter_categories_from_event
 
 yaml = YAML(typ='safe')
 
@@ -216,9 +212,8 @@ class EventLog(Configurable):
         allowed_categories = self.get_allowed_categories(schema_name)
         allowed_properties = self.get_allowed_properties(schema_name)
 
-        categories = extract_categories(event, schema)
-        filtered_event = filter_categories(
-            event, categories, allowed_categories, allowed_properties
+        filtered_event = filter_categories_from_event(
+            event, schema, allowed_categories, allowed_properties
         )
         capsule.update(filtered_event)
 

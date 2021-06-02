@@ -5,6 +5,17 @@ from jsonschema.exceptions import ValidationError
 
 
 class ExtractCategories(ValidationError):
+    """
+    A special `jsonschema.ValidationError` that carries information about the
+    `categories` keyword, intended to be yielded whenever a `categories` keyword
+    is encountered during `jsonschema` JSON validation.
+
+    The primary use case for this class is to make use of the JSON validation
+    mechanism implemented by `jsonschema` to extract all categories associated
+    with each property in a JSON instance based on a JSON schema. It is not
+    intended to be used as an actual validation error.
+    """
+
     def __init__(self, property, categories, *args, **kwargs):
         super(ValidationError, self).__init__(*args, **kwargs)
         self.property = property
@@ -13,10 +24,25 @@ class ExtractCategories(ValidationError):
 
 def extend_with_categories(validator_class):
     """
-    Extend the validator class so that during json schema validation, whenever
-    the keyword 'categories' is encountered in a valid context with regards to a
-    property, it yields an instance of ExtractCategories containing the
-    information needed for category filtering later.
+    Extend a `jsonschema.IValidator` class so that it yields a `_ExtractCategories`
+    whenever a `categories` keyword is encountered during JSON validation
+
+    Parameters
+    ----------
+    validator_class : jsonschema.IValidator
+        an existing validator class
+
+    Returns
+    -------
+    jsonschema.IValidator
+        a new `jsonschema.IValidator` class extending the one provided
+
+    Examples
+    --------
+    from jsonschema import Draft7Validator
+
+
+    CategoryExtractor = extend_with_categories(Draft7Validator)
     """
     validate_properties = validator_class.VALIDATORS["properties"]
 
@@ -57,24 +83,72 @@ def extract_categories_from_errors(errors):
             yield from extract_categories_from_errors(e.context)
 
 
-def extract_categories(instance, schema):
+def extract_categories_from_event(event, schema):
     """
-    Generate dict of ExtractCategories whose keys are pointers to the properties
+    Generate a `dict` of `_ExtractCategories` whose keys are pointers to the properties
+
+    Parameters
+    ----------
+    event : dict
+        A telemetry event
+
+    schema : dict
+        A JSON schema
+
+    Returns
+    -------
+    dict
+        A mapping from properties in the event to their categories.
+
+        In each entry, the key is a pointer to a property in the event
+        (in the form of a tuple) and the value is a `_ExtractCategories`
+        containing the categories associated with that property.
     """
     return {
         tuple(c.absolute_path + deque([c.property])): c
         for c in extract_categories_from_errors(
-            CategoryExtractor(schema).iter_errors(instance)
+            CategoryExtractor(schema).iter_errors(event)
         )
     }
 
 
-def filter_categories(instance, categories, allowed_categories, allowed_properties):
+def filter_categories_from_event(event, schema, allowed_categories, allowed_properties):
+    """
+    Filter properties from an event based on their categories.
+
+    Only whitelisted properties and properties whose categories are allowed are kept.
+
+    Parameters
+    ----------
+    event : dict
+        The input telemetry event
+
+    schema : dict
+        A JSON schema that makes use of the the `categories` keyword to
+        specify what categories are associated with a certain property.
+
+    allowed_categories : set
+        Specify which categories are allowed
+
+    allowed_properties : set
+        Whitelist certain top level properties.
+
+        These properties are included in the output event even if not all of
+        their properties are allowed.
+
+    Returns
+    -------
+    dict
+        The output event after category filtering
+
+    """
+    categories = extract_categories_from_event(event, schema)
+
     # Top-level properties without declared categories are set to null
-    for property in instance.keys():
+    for property in event.keys():
         path = (property,)
         if path not in categories:
-            instance[property] = None
+            event[property] = None
 
     # Allow only properties whose categories are included in allowed_categories
     # and whose top-level parent is included in allowed_properties
@@ -91,7 +165,7 @@ def filter_categories(instance, categories, allowed_categories, allowed_properti
         # the descendent would either return None or raise an IndexError or
         # KeyError. Just skip it.
         try:
-            item = deep_get(instance, c.absolute_path)
+            item = deep_get(event, c.absolute_path)
         except IndexError:
             continue
         except KeyError:
@@ -100,7 +174,7 @@ def filter_categories(instance, categories, allowed_categories, allowed_properti
         if item is not None:
             item[c.property] = None
 
-    return instance
+    return event
 
 
 def deep_get(instance, path):
