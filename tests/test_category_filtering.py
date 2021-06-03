@@ -131,7 +131,7 @@ def test_category_filtering(allowed_schemas, expected_output):
     event_data = get_event_data(
         NESTED_EVENT_DATA,
         NESTED_CATEGORY_SCHEMA,
-        allowed_schemas
+        allowed_schemas=allowed_schemas
     )
 
     # Verify that *exactly* the right properties are recorded.
@@ -284,7 +284,7 @@ def test_array_category_filtering(allowed_schemas, expected_output):
     event_data = get_event_data(
         ARRAY_EVENT_DATA,
         NESTED_CATEGORY_ARRAY_SCHEMA,
-        allowed_schemas
+        allowed_schemas=allowed_schemas
     )
 
     # Verify that *exactly* the right properties are recorded.
@@ -386,7 +386,7 @@ def test_no_additional_properties(allowed_schemas, expected_output):
     event_data = get_event_data(
         ADDITIONAL_PROP_EVENT_DATA,
         NESTED_CATEGORY_SCHEMA,
-        allowed_schemas
+        allowed_schemas=allowed_schemas
     )
 
     # Verify that *exactly* the right properties are recorded.
@@ -477,7 +477,7 @@ def test_category_filtering_ref(allowed_schemas, expected_output):
     event_data = get_event_data(
         NESTED_EVENT_DATA,
         NESTED_CATEGORY_SCHEMA_REF,
-        allowed_schemas
+        allowed_schemas=allowed_schemas
     )
 
     # Verify that *exactly* the right properties are recorded.
@@ -491,7 +491,7 @@ def test_category_filtering_allof(allowed_schemas, expected_output):
     event_data = get_event_data(
         NESTED_EVENT_DATA,
         NESTED_CATEGORY_SCHEMA_ALLOF,
-        allowed_schemas
+        allowed_schemas=allowed_schemas
     )
 
     # Verify that *exactly* the right properties are recorded.

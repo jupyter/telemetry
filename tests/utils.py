@@ -6,16 +6,14 @@ import logging
 from jupyter_telemetry.eventlog import EventLog
 
 
-def get_event_data(event, schema, allowed_schemas):
+def get_event_data(event, schema, *args, **kwargs):
     sink = io.StringIO()
 
     # Create a handler that captures+records events with allowed tags.
     handler = logging.StreamHandler(sink)
 
-    e = EventLog(
-        handlers=[handler],
-        allowed_schemas=allowed_schemas
-    )
+    e = EventLog(*args, **{**kwargs, 'handlers': [handler]})
+
     e.register_schema(schema)
 
     # Record event and read output
