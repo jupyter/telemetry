@@ -203,8 +203,6 @@ def test_allowed_schemas(schema, allowed_schemas, expected_output):
     event_data = get_event_data(
         EVENT_DATA,
         schema,
-        SCHEMA_ID,
-        VERSION,
         allowed_schemas
     )
 

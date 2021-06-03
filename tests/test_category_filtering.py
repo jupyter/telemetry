@@ -131,8 +131,6 @@ def test_category_filtering(allowed_schemas, expected_output):
     event_data = get_event_data(
         NESTED_EVENT_DATA,
         NESTED_CATEGORY_SCHEMA,
-        SCHEMA_ID,
-        VERSION,
         allowed_schemas
     )
 
@@ -286,8 +284,6 @@ def test_array_category_filtering(allowed_schemas, expected_output):
     event_data = get_event_data(
         ARRAY_EVENT_DATA,
         NESTED_CATEGORY_ARRAY_SCHEMA,
-        SCHEMA_ID,
-        VERSION,
         allowed_schemas
     )
 
@@ -390,8 +386,6 @@ def test_no_additional_properties(allowed_schemas, expected_output):
     event_data = get_event_data(
         ADDITIONAL_PROP_EVENT_DATA,
         NESTED_CATEGORY_SCHEMA,
-        SCHEMA_ID,
-        VERSION,
         allowed_schemas
     )
 
@@ -483,8 +477,6 @@ def test_category_filtering_ref(allowed_schemas, expected_output):
     event_data = get_event_data(
         NESTED_EVENT_DATA,
         NESTED_CATEGORY_SCHEMA_REF,
-        SCHEMA_ID,
-        VERSION,
         allowed_schemas
     )
 
@@ -499,8 +491,6 @@ def test_category_filtering_allof(allowed_schemas, expected_output):
     event_data = get_event_data(
         NESTED_EVENT_DATA,
         NESTED_CATEGORY_SCHEMA_ALLOF,
-        SCHEMA_ID,
-        VERSION,
         allowed_schemas
     )
 
