@@ -1,12 +1,11 @@
-import io
-import json
-import logging
 from textwrap import dedent as _
 from ruamel.yaml import YAML
 
 from jupyter_telemetry.eventlog import EventLog
 
 import pytest
+
+from .utils import get_event_data
 
 
 SCHEMA_ID = "test.event"
@@ -200,29 +199,14 @@ EVENT_DATA = {
         ),
     ]
 )
-def test_allowed_schemas(json_validator, schema, allowed_schemas, expected_output):
-    sink = io.StringIO()
-
-    # Create a handler that captures+records events with allowed tags.
-    handler = logging.StreamHandler(sink)
-
-    e = EventLog(
-        handlers=[handler],
-        allowed_schemas=allowed_schemas,
-        json_validator=json_validator
+def test_allowed_schemas(schema, allowed_schemas, expected_output):
+    event_data = get_event_data(
+        EVENT_DATA,
+        schema,
+        SCHEMA_ID,
+        VERSION,
+        allowed_schemas
     )
-    e.register_schema(schema)
-
-    event = {
-        'nothing-exciting': 'hello, world',
-        'id': 'test id',
-        'email': 'test@testemail.com',
-    }
-
-    # Record event and read output
-    e.record_event(SCHEMA_ID, VERSION, EVENT_DATA)
-    recorded_event = json.loads(sink.getvalue())
-    event_data = {key: value for key, value in recorded_event.items() if not key.startswith('__')}
 
     # Verify that *exactly* the right properties are recorded.
     assert expected_output == event_data
