@@ -199,11 +199,12 @@ EVENT_DATA = {
         ),
     ]
 )
-def test_allowed_schemas(schema, allowed_schemas, expected_output):
+def test_allowed_schemas(json_validator, schema, allowed_schemas, expected_output):
     event_data = get_event_data(
         EVENT_DATA,
         schema,
-        allowed_schemas=allowed_schemas
+        allowed_schemas=allowed_schemas,
+        json_validator=json_validator
     )
 
     # Verify that *exactly* the right properties are recorded.
