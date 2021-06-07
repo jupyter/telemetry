@@ -30,7 +30,7 @@ from .eventschema import EventSchema, JSON_SCHEMA_VALIDATORS
 from .traits import Handlers, SchemaOptions
 from . import TELEMETRY_METADATA_VERSION
 
-from .categories import filter_categories_from_event
+from ._categories import filter_categories_from_event
 
 yaml = YAML(typ='safe')
 
