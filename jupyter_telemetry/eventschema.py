@@ -2,29 +2,20 @@ import jsonschema
 import fastjsonschema
 
 
-class EventSchemaValidator:
-    def __init__(self, schema):
-        pass
-
-    def validate(self, instance):
-        pass
-
-
-class EventSchema:
-    def __init__(self, schema, validator_cls: EventSchemaValidator):
-        self.schema = schema
-        self._validator = validator_cls(schema)
-
-    def validate(self, instance):
-        self._validator.validate(instance)
-
-
 class JSONSchemaError(Exception):
     pass
 
 
 class JSONValidationError(Exception):
     pass
+
+
+class EventSchemaValidator:
+    def __init__(self, schema):
+        pass
+
+    def validate(self, instance):
+        pass
 
 
 class JSONSchemaValidator(EventSchemaValidator):
@@ -71,3 +62,14 @@ JSON_SCHEMA_VALIDATORS = {
     'jsonschema': JSONSchemaValidator,
     'fastjsonschema': FastJSONSchemaValidator
 }
+
+DEFAULT_SCHEMA_VALIDATOR = FastJSONSchemaValidator
+
+
+class EventSchema:
+    def __init__(self, schema, validator_cls=DEFAULT_SCHEMA_VALIDATOR):
+        self.schema = schema
+        self._validator = validator_cls(schema)
+
+    def validate(self, instance):
+        self._validator.validate(instance)
