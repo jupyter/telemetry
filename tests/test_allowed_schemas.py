@@ -40,7 +40,7 @@ def schema():
     }
 
 
-def test_raised_exception_for_nonlist_categories():
+def test_raised_exception_for_nonlist_categories(json_validator):
     # Bad schema in yaml form.
     yaml_schema = _("""\
     $id: test.schema
@@ -63,6 +63,7 @@ def test_raised_exception_for_nonlist_categories():
                 "allowed_categories": ["user-identifier"]
             }
         },
+        json_validator=json_validator
     )
 
     # This schema does not have categories as a list.
@@ -72,7 +73,7 @@ def test_raised_exception_for_nonlist_categories():
     assert 'must be a list.' in str(err.value)
 
 
-def test_missing_categories_label():
+def test_missing_categories_label(json_validator):
     # Bad schema in yaml form.
     yaml_schema = _("""\
     $id: test.schema
@@ -93,7 +94,8 @@ def test_missing_categories_label():
             SCHEMA_ID: {
                 "allowed_categories": ["random-category"]
             }
-        }
+        },
+        json_validator=json_validator
     )
 
     # This schema does not have categories as a list.
@@ -197,13 +199,12 @@ EVENT_DATA = {
         ),
     ]
 )
-def test_allowed_schemas(schema, allowed_schemas, expected_output):
+def test_allowed_schemas(json_validator, schema, allowed_schemas, expected_output):
     event_data = get_event_data(
         EVENT_DATA,
         schema,
-        SCHEMA_ID,
-        VERSION,
-        allowed_schemas
+        allowed_schemas=allowed_schemas,
+        json_validator=json_validator
     )
 
     # Verify that *exactly* the right properties are recorded.

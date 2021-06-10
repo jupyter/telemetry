@@ -127,13 +127,12 @@ NESTED_CATEGORY_TEST_CASES = [
 @pytest.mark.parametrize(
     'allowed_schemas,expected_output', NESTED_CATEGORY_TEST_CASES
 )
-def test_category_filtering(allowed_schemas, expected_output):
+def test_category_filtering(json_validator, allowed_schemas, expected_output):
     event_data = get_event_data(
         NESTED_EVENT_DATA,
         NESTED_CATEGORY_SCHEMA,
-        SCHEMA_ID,
-        VERSION,
-        allowed_schemas
+        allowed_schemas=allowed_schemas,
+        json_validator=json_validator
     )
 
     # Verify that *exactly* the right properties are recorded.
@@ -282,13 +281,12 @@ ARRAY_EVENT_DATA = {
         ),
     ]
 )
-def test_array_category_filtering(allowed_schemas, expected_output):
+def test_array_category_filtering(json_validator, allowed_schemas, expected_output):
     event_data = get_event_data(
         ARRAY_EVENT_DATA,
         NESTED_CATEGORY_ARRAY_SCHEMA,
-        SCHEMA_ID,
-        VERSION,
-        allowed_schemas
+        allowed_schemas=allowed_schemas,
+        json_validator=json_validator
     )
 
     # Verify that *exactly* the right properties are recorded.
@@ -386,13 +384,12 @@ ADDITIONAL_PROP_EVENT_DATA = {
         ),
     ]
 )
-def test_no_additional_properties(allowed_schemas, expected_output):
+def test_no_additional_properties(json_validator, allowed_schemas, expected_output):
     event_data = get_event_data(
         ADDITIONAL_PROP_EVENT_DATA,
         NESTED_CATEGORY_SCHEMA,
-        SCHEMA_ID,
-        VERSION,
-        allowed_schemas
+        allowed_schemas=allowed_schemas,
+        json_validator=json_validator
     )
 
     # Verify that *exactly* the right properties are recorded.
@@ -479,13 +476,12 @@ NESTED_CATEGORY_SCHEMA_REF = {
 @pytest.mark.parametrize(
     'allowed_schemas,expected_output', NESTED_CATEGORY_TEST_CASES
 )
-def test_category_filtering_ref(allowed_schemas, expected_output):
+def test_category_filtering_ref(json_validator, allowed_schemas, expected_output):
     event_data = get_event_data(
         NESTED_EVENT_DATA,
         NESTED_CATEGORY_SCHEMA_REF,
-        SCHEMA_ID,
-        VERSION,
-        allowed_schemas
+        allowed_schemas=allowed_schemas,
+        json_validator=json_validator
     )
 
     # Verify that *exactly* the right properties are recorded.
@@ -495,13 +491,12 @@ def test_category_filtering_ref(allowed_schemas, expected_output):
 @pytest.mark.parametrize(
     'allowed_schemas,expected_output', NESTED_CATEGORY_TEST_CASES
 )
-def test_category_filtering_allof(allowed_schemas, expected_output):
+def test_category_filtering_allof(json_validator, allowed_schemas, expected_output):
     event_data = get_event_data(
         NESTED_EVENT_DATA,
         NESTED_CATEGORY_SCHEMA_ALLOF,
-        SCHEMA_ID,
-        VERSION,
-        allowed_schemas
+        allowed_schemas=allowed_schemas,
+        json_validator=json_validator
     )
 
     # Verify that *exactly* the right properties are recorded.
