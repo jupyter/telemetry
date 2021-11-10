@@ -86,7 +86,7 @@ Schemas are used at two places
 
 ### Event Sinks
 
-Event sinks are the backends where events published to.  Event sinks can be configured from the browser as well as the server. Custom sinks can be implemented by extending the interface for the given Jupyter component. 
+Event sinks are the backends where events published to.  Event sinks can be configured from the browser as well as the server. Custom sinks can be implemented by extending the interface for the given Jupyter component.
 See [Python interface](#python-event-sink-interface) and the [JupyterLab interface](#jupyterlab-event-sink-interface)
 
 ### Server-side components
@@ -354,7 +354,7 @@ There are certainly ethical and legal questions around telemetry systems. To add
 
 ### References
 
-0. Telemetry [JEP proposal](https://github.com/jupyter/telemetry/blob/master/JEP.md)
+0. Telemetry [JEP proposal](https://github.com/jupyter/telemetry/blob/master/proposal/JEP.md)
 1. Original write up by ellisonbg@ [https://github.com/jupyterlab/team-compass/issues/4](https://github.com/jupyterlab/team-compass/issues/4)
 2. Wikimedia [telemetry system](https://m.mediawiki.org/wiki/Extension:EventLogging/Guide)
 3. Initial strawman [design doc](https://github.com/jupyterlab/jupyterlab-telemetry/blob/master/design.md)
