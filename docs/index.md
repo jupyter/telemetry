@@ -9,7 +9,7 @@ The most common way to use Jupyter's telemetry system is to configure the ``Even
 
 If you're looking to add telemetry to an application that you're developing, check out the page "[](pages/configure.md)".
 
-If you're looking for client-side telemetry in Jupyter frontend applications (like JupyterLab), checkout the work happening in [jupyterlab-telemetry](https://github.com/jupyterlab/jupyterlab-telemetry)!
+If you're looking for client-side telemetry in Jupyter frontend applications (like JupyterLab), check out the work happening in [jupyterlab-telemetry](https://github.com/jupyterlab/jupyterlab-telemetry)!
 
 
 ## Installation
