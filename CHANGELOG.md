@@ -1,5 +1,10 @@
 # CHANGELOG
 
+<!-- <START NEW CHANGELOG ENTRY> -->
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
+
 ## v0.1.0
 
 - Ensure unique loggers [#45](https://github.com/jupyter/telemetry/pull/45)

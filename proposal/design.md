@@ -9,7 +9,7 @@ implementation, the design will change, and vice versa.
 
 The primary reasons for collecting such data are:
 
-1. Better understanding of *usage* of their infrastructure. This 
+1. Better understanding of *usage* of their infrastructure. This
    might be for capacity planning, metrics, billing, etc
 
 2. *Auditing* requirements - for security or legal reasons. Our
@@ -25,14 +25,14 @@ The primary reasons for collecting such data are:
 3. *Operational* metrics. Prometheus metrics should be used for
    most operational metrics (error rates, percentiles of server
    or kernel start times, memory usage, etc). However, some
-   operational data is much more useful when lossless than 
+   operational data is much more useful when lossless than
    when sampled, such as server start times or contentmanager
    usage.
 
 ## Metrics vs Events
 
 Both Metrics and Events are telemetry, but are fundamentally
-different. Katy Farmer [explains it](https://thenewstack.io/what-is-the-difference-between-metrics-and-events/) 
+different. Katy Farmer [explains it](https://thenewstack.io/what-is-the-difference-between-metrics-and-events/)
 thus:
 
 > I want to keep track of my piggy bank closely. Right now, there’s only one
@@ -166,8 +166,8 @@ inspiration from.
 
   Firefox runs on a lot of browsers, and has a lot of very privacy conscious
   users & developers. Mozilla has a well thought out [data collection policy]
-  (https://wiki.mozilla.org/Firefox/Data_Collection). 
-  
+  (https://wiki.mozilla.org/Firefox/Data_Collection).
+
   There is a [technical overview](https://firefox-source-docs.mozilla.org/toolkit/components/telemetry/telemetry/start/adding-a-new-probe.html)
   of various capabilities available. Their [events](https://firefox-source-docs.mozilla.org/toolkit/components/telemetry/telemetry/collection/events.html)
   system is most similar to what we want here. Similar to the wikimedia example,
@@ -185,7 +185,7 @@ inspiration from.
   various packages used in end user systems with the [popularity
   contest](https://popcon.debian.org/). It is a purely opt-in system,
   and records packages installed in the system and the frequency
-  of their use. This is [sortof anonymously, sortof securely](https://popcon.debian.org/FAQ) 
+  of their use. This is [sortof anonymously, sortof securely](https://popcon.debian.org/FAQ)
   sent to a centralized server, which then produces useful graphs.
   [Ubuntu](https://popcon.ubuntu.com/) and [NeuroDebian](http://neuro.debian.net/popcon/)
   run versions of this as well for their own packages.
@@ -198,8 +198,8 @@ inspiration from.
 
 * Homebrew's analytics
 
-  The popular OS X package manager [homebrew](https://brew.sh]
-  [collects information](https://github.com/Homebrew/brew/blob/master/docs/Analytics.md) about 
+  The popular OS X package manager [homebrew](https://brew.sh)
+  [collects information](https://github.com/Homebrew/brew/blob/master/docs/Analytics.md) about
   usage with Google Analytics. This is very similar to the Debian Popularity
   contest system, except it sends events to a third party (Google Analytics)
   instead. You can opt out of it if you wish.
@@ -241,7 +241,7 @@ inspiration from.
    3. Wrap the event in an *event capsule* with common information
       for all events - timestamp (of sufficient granularity),
       schema reference, origin, etc.
-   4. Emit the event to a given 'sink'. We should leverage the 
+   4. Emit the event to a given 'sink'. We should leverage the
       ecosystem built around Python Loggers for this, so we can
       send events to a wide variety of sources - [files](https://docs.python.org/3/library/logging.handlers.html#filehandler),
       [files with automatic rotation](https://docs.python.org/3/library/logging.handlers.html#rotatingfilehandler),
