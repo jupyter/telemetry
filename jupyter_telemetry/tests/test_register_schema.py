@@ -91,6 +91,10 @@ def test_timestamp_override():
 
     event_capsule = json.loads(output.getvalue())
 
+    # Cope with python3.12
+    if "taskName" in event_capsule:
+        del event_capsule["taskName"]
+
     assert event_capsule['__timestamp__'] == timestamp_override.isoformat() + 'Z'
 
 
@@ -125,6 +129,11 @@ def test_record_event():
     assert '__timestamp__' in event_capsule
     # Remove timestamp from capsule when checking equality, since it is gonna vary
     del event_capsule['__timestamp__']
+
+    # Cope with python3.12
+    if "taskName" in event_capsule:
+        del event_capsule["taskName"]
+
     assert event_capsule == {
         '__schema__': 'test/test',
         '__schema_version__': 1,
@@ -295,6 +304,9 @@ def test_unique_logger_instances():
     assert '__timestamp__' in event_capsule0
     # Remove timestamp from capsule when checking equality, since it is gonna vary
     del event_capsule0['__timestamp__']
+    # Cope with python3.12
+    if "taskName" in event_capsule0:
+        del event_capsule0["taskName"]
     assert event_capsule0 == {
         '__schema__': 'test/test0',
         '__schema_version__': 1,
@@ -307,6 +319,9 @@ def test_unique_logger_instances():
     assert '__timestamp__' in event_capsule1
     # Remove timestamp from capsule when checking equality, since it is gonna vary
     del event_capsule1['__timestamp__']
+    # Cope with python3.12
+    if "taskName" in event_capsule1:
+        del event_capsule1["taskName"]
     assert event_capsule1 == {
         '__schema__': 'test/test1',
         '__schema_version__': 1,
