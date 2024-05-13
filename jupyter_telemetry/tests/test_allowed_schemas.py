@@ -206,5 +206,9 @@ def test_allowed_schemas(schema, allowed_schemas, expected_output):
         allowed_schemas
     )
 
+    # Cope with python3.12
+    if "taskName" in event_data:
+        del event_data["taskName"]
+
     # Verify that *exactly* the right properties are recorded.
     assert expected_output == event_data
