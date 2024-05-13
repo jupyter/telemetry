@@ -136,6 +136,10 @@ def test_category_filtering(allowed_schemas, expected_output):
         allowed_schemas
     )
 
+    # Cope with python3.12
+    if "taskName" in event_data:
+        del event_data["taskName"]
+
     # Verify that *exactly* the right properties are recorded.
     assert expected_output == event_data
 
@@ -291,6 +295,10 @@ def test_array_category_filtering(allowed_schemas, expected_output):
         allowed_schemas
     )
 
+    # Cope with python3.12
+    if "taskName" in event_data:
+        del event_data["taskName"]
+
     # Verify that *exactly* the right properties are recorded.
     assert expected_output == event_data
 
@@ -395,6 +403,10 @@ def test_no_additional_properties(allowed_schemas, expected_output):
         allowed_schemas
     )
 
+    # Cope with python3.12
+    if "taskName" in event_data:
+        del event_data["taskName"]
+
     # Verify that *exactly* the right properties are recorded.
     assert expected_output == event_data
 
@@ -488,6 +500,10 @@ def test_category_filtering_ref(allowed_schemas, expected_output):
         allowed_schemas
     )
 
+    # Cope with python3.12
+    if "taskName" in event_data:
+        del event_data["taskName"]
+
     # Verify that *exactly* the right properties are recorded.
     assert expected_output == event_data
 
@@ -503,6 +519,10 @@ def test_category_filtering_allof(allowed_schemas, expected_output):
         VERSION,
         allowed_schemas
     )
+
+    # Cope with python3.12
+    if "taskName" in event_data:
+        del event_data["taskName"]
 
     # Verify that *exactly* the right properties are recorded.
     assert expected_output == event_data

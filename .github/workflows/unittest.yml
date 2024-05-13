@@ -10,11 +10,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: ["3.6", "3.7", "3.8", "3.9"]
-        exclude:
-          - os: macos-latest
-            python-version: "3.6"
+        os: [ubuntu-latest, windows-latest]
+        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11", "3.12"]
+        include:
+          - os: macos-12  # This runner is on Intel chips.
+            python-version: 3.9
+          - os: macos-14  # This runner is on M1 (arm64) chips.
+            python-version: '3.12'
     steps:
       - name: Checkout
         uses: actions/checkout@v1
